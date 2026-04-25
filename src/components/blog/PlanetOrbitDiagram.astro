@@ -1,0 +1,248 @@
+---
+// Planet Orbit Diagram — client:idle island
+// Mobile: hides diagram, shows vertical list
+---
+
+<div class="pod-wrapper">
+  <!-- Mobile fallback -->
+  <div class="pod-mobile-notice" aria-hidden="true">
+    Interactive diagram available on desktop
+  </div>
+  <ul class="pod-mobile-list">
+    <li><span class="pod-planet">Mercury</span><span class="pod-phase">Cratered infant — intense bombardment, no atmosphere</span></li>
+    <li><span class="pod-planet">Venus</span><span class="pod-phase">Ancient temperate — potentially habitable for billions of years</span></li>
+    <li><span class="pod-planet">Earth</span><span class="pod-phase">Prime habitable — liquid water, complex life, active geology</span></li>
+    <li><span class="pod-planet">Mars</span><span class="pod-phase">Post-habitable — dried riverbeds, thin atmosphere, frozen poles</span></li>
+    <li><span class="pod-planet">Asteroid Belt</span><span class="pod-phase">Disrupted — failed planet, gravitational conflict with Jupiter</span></li>
+    <li><span class="pod-planet">Jupiter</span><span class="pod-phase">Gas giant shepherd — protects inner system from debris</span></li>
+    <li><span class="pod-planet">Saturn</span><span class="pod-phase">Ringed giant — tidal forces, moon system with habitable candidates</span></li>
+    <li><span class="pod-planet">Uranus</span><span class="pod-phase">Ice giant — extreme axial tilt, complex magnetic field</span></li>
+    <li><span class="pod-planet">Neptune</span><span class="pod-phase">Outer sentinel — strongest winds in solar system</span></li>
+    <li><span class="pod-planet">Kuiper Belt</span><span class="pod-phase">Primordial reservoir — comets, dwarf planets, future candidates</span></li>
+  </ul>
+
+  <!-- Desktop diagram -->
+  <div class="pod-diagram" aria-label="Solar system planet orbit diagram">
+    <div class="pod-sun" aria-hidden="true"></div>
+    <div class="pod-orbit-track" role="list" aria-label="Planets in orbit sequence">
+      {[
+        { name: 'Mercury', phase: 'Cratered infant', desc: 'Intense bombardment. No atmosphere. Closest to the Sun. Mercury represents the earliest, most brutal phase of a rocky world — stripped bare by solar proximity.', kicker: 'Phase 1 · Cratered Infant' },
+        { name: 'Venus', phase: 'Ancient temperate', desc: 'Potentially habitable for up to 3 billion years before the Sun\'s increasing luminosity triggered a runaway greenhouse effect. Venus is Earth\'s cautionary mirror.', kicker: 'Phase 2 · Ancient Temperate' },
+        { name: 'Earth', phase: 'Prime habitable', desc: 'Liquid water, complex life, plate tectonics, magnetic field. Earth sits at the current sweet spot of solar output — but this window is not permanent.', kicker: 'Phase 3 · Prime Habitable' },
+        { name: 'Mars', phase: 'Post-habitable', desc: 'Dried riverbeds. Ancient lake basins. A magnetic field that collapsed 4 billion years ago. Mars shows what Earth may eventually become.', kicker: 'Phase 4 · Post-Habitable' },
+        { name: 'Asteroid Belt', phase: 'Disrupted zone', desc: 'A failed planet, prevented from forming by Jupiter\'s gravitational dominance. A reminder that not every position in the lifecycle succeeds.', kicker: 'Disrupted Zone' },
+        { name: 'Jupiter', phase: 'Outer shepherd', desc: 'Jupiter\'s gravity deflects comets and asteroids, protecting the inner system. Its moon Europa may harbor a subsurface ocean — a habitable candidate.', kicker: 'Phase 5 · Outer Shepherd' },
+        { name: 'Saturn', phase: 'Ringed giant', desc: 'Enceladus jets water ice into space from a confirmed subsurface ocean. Titan has lakes — of methane. Saturn\'s system is a preview of future habitability.', kicker: 'Phase 6 · Ringed Giant' },
+        { name: 'Uranus', phase: 'Ice giant', desc: 'Extreme axial tilt — possibly knocked sideways by a massive ancient collision. Uranus represents the outer edge of our current understanding.', kicker: 'Phase 7 · Ice Giant' },
+        { name: 'Neptune', phase: 'Outer sentinel', desc: 'The strongest sustained winds in the solar system. The farthest known major planet. Neptune is the current edge — but the habitable zone will eventually reach here.', kicker: 'Phase 8 · Outer Sentinel' },
+        { name: 'Kuiper Belt', phase: 'Primordial reservoir', desc: 'Billions of icy bodies. Future comets. Possibly the source of Earth\'s water. The Kuiper Belt is the solar system\'s frozen archive.', kicker: 'Outer Archive' },
+      ].map((planet) => (
+        <div
+          class="pod-body"
+          role="button"
+          tabindex="0"
+          aria-label={`${planet.name}: ${planet.phase}`}
+          data-name={planet.name}
+          data-phase={planet.phase}
+          data-desc={planet.desc}
+          data-kicker={planet.kicker}
+        >
+          <div class="pod-dot" aria-hidden="true"></div>
+          <span class="pod-label">{planet.name}</span>
+          <span class="pod-phase-label">{planet.phase}</span>
+        </div>
+      ))}
+    </div>
+
+    <!-- Description panel -->
+    <div class="pod-panel glass" id="pod-panel" aria-live="polite">
+      <p class="pod-panel-kicker">Click or tap a planet to explore its phase</p>
+      <h3 class="pod-panel-title"></h3>
+      <p class="pod-panel-body"></p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pod-wrapper { margin: 2rem 0; }
+
+  /* Mobile */
+  .pod-mobile-notice {
+    display: none;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .pod-mobile-list {
+    display: none;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pod-mobile-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pod-planet {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+
+  .pod-phase {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  /* Desktop diagram */
+  .pod-diagram {
+    position: relative;
+  }
+
+  .pod-sun {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff9a0, #f5a623, #c8590a);
+    box-shadow: 0 0 32px 8px rgba(200, 131, 58, 0.4);
+    margin: 0 auto 1.5rem;
+  }
+
+  .pod-orbit-track {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 1rem 0 1.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .pod-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    flex: 0 0 80px;
+    padding: 0.5rem 0.25rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .pod-body:hover,
+  .pod-body:focus,
+  .pod-body.active {
+    border-color: var(--gold);
+    box-shadow: 0 0 8px rgba(200, 169, 110, 0.3);
+    outline: none;
+    transform: translateY(-3px);
+  }
+
+  .pod-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0.8;
+  }
+
+  .pod-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .pod-phase-label {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-align: center;
+    opacity: 0.6;
+    line-height: 1.2;
+  }
+
+  /* Description panel */
+  .pod-panel {
+    min-height: 122px;
+    padding: 1rem 1.1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .pod-panel-kicker {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.625rem;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .pod-panel-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 1.25rem;
+    color: #ead5a8;
+    font-weight: 700;
+  }
+
+  .pod-panel-body {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  /* Mobile overrides */
+  @media (max-width: 767px) {
+    .pod-diagram { display: none; }
+    .pod-mobile-notice,
+    .pod-mobile-list { display: block; }
+    .pod-mobile-list { display: flex; flex-direction: column; }
+  }
+</style>
+
+<script>
+  const bodies = document.querySelectorAll('.pod-body');
+  const panel = document.getElementById('pod-panel');
+
+  if (panel) {
+    const kicEl = panel.querySelector('.pod-panel-kicker') as HTMLElement;
+    const titleEl = panel.querySelector('.pod-panel-title') as HTMLElement;
+    const bodyEl = panel.querySelector('.pod-panel-body') as HTMLElement;
+
+    const activate = (el: Element) => {
+      bodies.forEach((b) => b.classList.remove('active'));
+      el.classList.add('active');
+      kicEl.textContent = el.getAttribute('data-kicker') ?? '';
+      titleEl.textContent = el.getAttribute('data-name') ?? '';
+      bodyEl.textContent = el.getAttribute('data-desc') ?? '';
+    };
+
+    bodies.forEach((body) => {
+      body.addEventListener('click', () => activate(body));
+      body.addEventListener('keydown', (e) => {
+        if ((e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key === ' ') {
+          e.preventDefault();
+          activate(body);
+        }
+      });
+    });
+  }
+</script>

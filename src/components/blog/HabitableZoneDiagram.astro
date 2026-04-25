@@ -1,0 +1,375 @@
+---
+// Habitable Zone Diagram — canvas-based solar evolution slider
+// client:idle island component
+---
+
+<div class="hz-wrapper">
+  <!-- Mobile fallback -->
+  <p class="hz-mobile-notice">Solar evolution diagram available on desktop</p>
+
+  <!-- Desktop diagram -->
+  <div class="hz-desktop">
+    <p class="hz-interaction-cue">
+      Drag the slider to simulate solar evolution across 12 billion years
+    </p>
+
+    <canvas
+      id="hz-canvas"
+      width="700"
+      height="300"
+      role="img"
+      aria-label="Interactive diagram showing planetary positions and the habitable zone across solar evolution stages"
+    ></canvas>
+
+    <div class="hz-controls">
+      <button
+        id="hz-play"
+        class="hz-play-btn"
+        aria-label="Play solar evolution animation"
+      >▶</button>
+
+      <div class="hz-slider-track">
+        <input
+          type="range"
+          id="hz-slider"
+          min="0"
+          max="100"
+          value="45"
+          step="1"
+          aria-label="Solar age in billions of years"
+          aria-valuetext="4.6 billion years (current)"
+        />
+        <span class="hz-readout" id="hz-readout">4.6 Gyr</span>
+      </div>
+    </div>
+
+    <div class="hz-legend">
+      <span class="hz-legend-item">
+        <span class="hz-swatch hz-swatch--hz" aria-hidden="true"></span>
+        Classical habitable zone
+      </span>
+      <span class="hz-legend-item">
+        <span class="hz-swatch hz-swatch--temperate" aria-hidden="true"></span>
+        Temperate model
+      </span>
+    </div>
+
+    <p class="hz-text-fallback" id="hz-text-fallback" aria-live="polite"></p>
+  </div>
+</div>
+
+<style>
+  .hz-wrapper { margin: 2rem 0; }
+
+  .hz-mobile-notice {
+    display: none;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 1rem;
+  }
+
+  @media (max-width: 767px) {
+    .hz-desktop { display: none; }
+    .hz-mobile-notice { display: block; }
+  }
+
+  .hz-interaction-cue {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 0.75rem;
+    text-align: center;
+  }
+
+  #hz-canvas {
+    display: block;
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 4px;
+  }
+
+  .hz-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 700px;
+    margin: 0.75rem auto 0;
+  }
+
+  .hz-play-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border-bright);
+    background: transparent;
+    color: var(--gold);
+    border-radius: 2px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .hz-play-btn:hover { border-color: var(--gold); }
+
+  /* Hide play button if reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .hz-play-btn { display: none; }
+  }
+
+  .hz-slider-track {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  #hz-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+
+  #hz-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f3d7a0, #c8a96e);
+    border: 1px solid #f3d7a0;
+    box-shadow: 0 0 0 4px rgba(200, 169, 110, 0.2);
+    cursor: grab;
+  }
+
+  #hz-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f3d7a0, #c8a96e);
+    border: 1px solid #f3d7a0;
+    box-shadow: 0 0 0 4px rgba(200, 169, 110, 0.2);
+    cursor: grab;
+  }
+
+  .hz-readout {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--gold);
+    min-width: 4rem;
+    text-align: right;
+  }
+
+  .hz-legend {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .hz-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  .hz-swatch {
+    display: inline-block;
+    width: 16px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .hz-swatch--hz { background: rgba(78, 184, 122, 0.5); }
+  .hz-swatch--temperate {
+    border: 1.5px dashed rgba(122, 208, 214, 0.5);
+    background: transparent;
+  }
+
+  .hz-text-fallback {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 0.5rem;
+    min-height: 1.2em;
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('hz-canvas') as HTMLCanvasElement | null;
+  const slider = document.getElementById('hz-slider') as HTMLInputElement | null;
+  const readout = document.getElementById('hz-readout');
+  const playBtn = document.getElementById('hz-play');
+  const fallbackText = document.getElementById('hz-text-fallback');
+
+  if (!canvas || !slider) { /* not in DOM (mobile) */ }
+  else {
+    const ctx = canvas.getContext('2d')!;
+
+    // Planets: [name, AU distance, size, color]
+    const planets: [string, number, number, string][] = [
+      ['Mercury', 0.39, 4, '#b5b5b5'],
+      ['Venus', 0.72, 7, '#e8c97a'],
+      ['Earth', 1.0, 7, '#4e9cf0'],
+      ['Mars', 1.52, 5, '#c1440e'],
+      ['Jupiter', 5.2, 14, '#c88b50'],
+      ['Saturn', 9.58, 12, '#d4b06a'],
+      ['Uranus', 19.2, 9, '#7de8e8'],
+      ['Neptune', 30.1, 8, '#3f54ba'],
+    ];
+
+    const MAX_AU = 35;
+
+    function auToX(au: number, w: number): number {
+      return 40 + (au / MAX_AU) * (w - 60);
+    }
+
+    // HZ boundaries (AU) as a function of solar age (0–12 Gyr)
+    function hzBounds(gyr: number): [number, number] {
+      const factor = 1 + (gyr / 12) * 0.4;
+      return [0.95 * factor, 1.67 * factor];
+    }
+
+    function tempBounds(gyr: number): [number, number] {
+      const [inner, outer] = hzBounds(gyr);
+      return [inner * 0.85, outer * 1.15];
+    }
+
+    function draw(gyr: number) {
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // Background
+      ctx.fillStyle = '#0A0A0A';
+      ctx.fillRect(0, 0, W, H);
+
+      const [hzInner, hzOuter] = hzBounds(gyr);
+      const [tInner, tOuter] = tempBounds(gyr);
+
+      // Temperate model band (dashed)
+      const tX1 = auToX(tInner, W);
+      const tX2 = auToX(tOuter, W);
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = 'rgba(122,208,214,0.5)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(tX1, 20, tX2 - tX1, H - 40);
+      ctx.restore();
+
+      // Classical HZ band
+      const hzX1 = auToX(hzInner, W);
+      const hzX2 = auToX(hzOuter, W);
+      ctx.fillStyle = 'rgba(78,184,122,0.18)';
+      ctx.fillRect(hzX1, 20, hzX2 - hzX1, H - 40);
+      ctx.strokeStyle = 'rgba(78,184,122,0.5)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(hzX1, 20, hzX2 - hzX1, H - 40);
+
+      // Sun
+      const sunGrad = ctx.createRadialGradient(20, H / 2, 2, 20, H / 2, 18);
+      sunGrad.addColorStop(0, '#fff9a0');
+      sunGrad.addColorStop(0.5, '#f5a623');
+      sunGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = sunGrad;
+      ctx.beginPath();
+      ctx.arc(20, H / 2, 18, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Planets
+      planets.forEach(([name, au, size, color]) => {
+        const x = auToX(au, W);
+        const y = H / 2;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Label
+        ctx.fillStyle = 'rgba(136,136,136,0.8)';
+        ctx.font = '9px Geist Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(name, x, y + size / 2 + 12);
+      });
+
+      // Age label
+      ctx.fillStyle = 'rgba(200,169,110,0.7)';
+      ctx.font = '11px Geist Mono, monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(`Solar age: ${gyr.toFixed(1)} Gyr`, W - 10, 16);
+    }
+
+    function gyrFromSlider(val: number): number {
+      return (val / 100) * 12;
+    }
+
+    function updateFromSlider() {
+      const gyr = gyrFromSlider(Number(slider!.value));
+      draw(gyr);
+      const readStr = `${gyr.toFixed(1)} Gyr`;
+      if (readout) readout.textContent = readStr;
+      slider!.setAttribute('aria-valuetext', `${gyr.toFixed(1)} billion years`);
+
+      // HZ description for screen readers
+      const [inner, outer] = hzBounds(gyr);
+      if (fallbackText) {
+        fallbackText.textContent =
+          `At ${gyr.toFixed(1)} billion years, the classical habitable zone spans ${inner.toFixed(2)}–${outer.toFixed(2)} AU from the Sun.`;
+      }
+    }
+
+    slider.addEventListener('input', updateFromSlider);
+    updateFromSlider();
+
+    // Play button animation
+    let animFrame: number | null = null;
+    let playing = false;
+
+    if (playBtn) {
+      playBtn.addEventListener('click', () => {
+        if (playing) {
+          playing = false;
+          if (animFrame !== null) cancelAnimationFrame(animFrame);
+          playBtn.textContent = '▶';
+          playBtn.setAttribute('aria-label', 'Play solar evolution animation');
+        } else {
+          playing = true;
+          playBtn.textContent = '⏸';
+          playBtn.setAttribute('aria-label', 'Pause solar evolution animation');
+
+          const step = () => {
+            if (!playing) return;
+            let val = Number(slider!.value) + 0.2;
+            if (val > 100) val = 0;
+            slider!.value = String(val);
+            updateFromSlider();
+            animFrame = requestAnimationFrame(step);
+          };
+          animFrame = requestAnimationFrame(step);
+        }
+      });
+    }
+
+    // Resize redraw
+    const ro = new ResizeObserver(() => {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = Math.min(rect.width * 0.43, 300);
+      updateFromSlider();
+    });
+    ro.observe(canvas);
+  }
+</script>

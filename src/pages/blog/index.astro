@@ -1,0 +1,302 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+allPosts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+// Group by series
+type Post = typeof allPosts[number];
+interface SeriesGroup {
+  name: string;
+  posts: Post[];
+}
+
+const seriesMap = new Map<string, Post[]>();
+const standalone: Post[] = [];
+
+for (const post of allPosts) {
+  if (post.data.series) {
+    const key = post.data.series;
+    if (!seriesMap.has(key)) seriesMap.set(key, []);
+    seriesMap.get(key)!.push(post);
+  } else {
+    standalone.push(post);
+  }
+}
+
+// Sort posts within each series by seriesOrder
+for (const [, posts] of seriesMap) {
+  posts.sort((a, b) => (a.data.seriesOrder ?? 0) - (b.data.seriesOrder ?? 0));
+}
+
+const seriesGroups: SeriesGroup[] = Array.from(seriesMap.entries()).map(([name, posts]) => ({
+  name,
+  posts,
+}));
+
+// Determine layout mode
+const totalCount = allPosts.length;
+const useBento = totalCount >= 3;
+---
+
+<Layout title="Writing — QA & Automation Engineer">
+  <main class="blog-index">
+    <header class="blog-header">
+      <a href="/" class="back-home">← Home</a>
+      <h1 class="page-title">Writing</h1>
+    </header>
+
+    {useBento ? (
+      <!-- 3+ articles: bento grid -->
+      <div class="bento-grid">
+        {allPosts.map((post) => (
+          <a href={`/blog/${post.slug}`} class="bento-card glass">
+            <div class="bento-inner">
+              {post.data.series && (
+                <p class="card-series">
+                  {post.data.series} · Part {post.data.seriesOrder}
+                </p>
+              )}
+              <h2 class="card-title">{post.data.title}</h2>
+              <p class="card-tag">{post.data.tags[0]}</p>
+              <p class="card-excerpt">{post.data.excerpt}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <!-- 1–2 articles: split-pane or series-grouped split-pane -->
+      <div class="panes-container">
+        {seriesGroups.map((group) => (
+          <div class="series-group">
+            <p class="series-label">
+              {group.name} — {group.posts.length} {group.posts.length === 1 ? 'part' : 'parts'}
+            </p>
+            <div class={`panes panes-${group.posts.length}`}>
+              {group.posts.map((post, i) => (
+                <a
+                  href={`/blog/${post.slug}`}
+                  class={`pane pane-${i}`}
+                  style={i === 0
+                    ? 'background: rgba(0,245,255,0.06)'
+                    : 'background: rgba(112,0,255,0.06)'}
+                >
+                  <div class="pane-inner">
+                    <p class="pane-series-indicator">
+                      Part {post.data.seriesOrder} of {group.posts.length}
+                    </p>
+                    <h2 class="pane-title">{post.data.title}</h2>
+                    <p class="pane-tag">{post.data.tags[0]}</p>
+                    <p class="pane-excerpt">{post.data.excerpt}</p>
+                  </div>
+                  <div class="pane-glow" aria-hidden="true"></div>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {standalone.map((post, i) => (
+          <a
+            href={`/blog/${post.slug}`}
+            class="pane pane-standalone"
+            style={i === 0
+              ? 'background: rgba(0,245,255,0.06)'
+              : 'background: rgba(112,0,255,0.06)'}
+          >
+            <div class="pane-inner">
+              <h2 class="pane-title">{post.data.title}</h2>
+              <p class="pane-tag">{post.data.tags[0]}</p>
+              <p class="pane-excerpt">{post.data.excerpt}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+  </main>
+</Layout>
+
+<style>
+  .blog-index {
+    min-height: 100svh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .blog-header {
+    padding: 2rem clamp(1.5rem, 5vw, 4rem);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .back-home {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .back-home:hover { color: var(--accent); }
+
+  .page-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    letter-spacing: -0.05em;
+    color: var(--text-primary);
+  }
+
+  /* ── Bento Grid (3+ articles) ──────────────────────────────── */
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1px;
+    flex: 1;
+    background: var(--border);
+  }
+
+  .bento-card {
+    display: block;
+    text-decoration: none;
+    padding: 2rem;
+    transition: background 0.3s;
+    background: var(--bg) !important;
+  }
+  .bento-card:hover { background: var(--surface) !important; }
+
+  .bento-inner { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  /* ── Split Panes (1–2 articles) ────────────────────────────── */
+  .panes-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0;
+  }
+
+  .series-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .series-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding: 0.75rem clamp(1.5rem, 5vw, 4rem);
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  .panes {
+    display: flex;
+    flex: 1;
+    min-height: calc(100svh - 5rem - 2.5rem);
+  }
+
+  .pane {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2.5rem clamp(1.5rem, 5vw, 4rem);
+    text-decoration: none;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+    transition: flex-basis 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .pane:last-child { border-right: none; }
+
+  .panes:has(.pane-0:hover) .pane-0 { flex: 0 0 70%; }
+  .panes:has(.pane-0:hover) .pane-1 { flex: 0 0 30%; }
+  .panes:has(.pane-1:hover) .pane-1 { flex: 0 0 70%; }
+  .panes:has(.pane-1:hover) .pane-0 { flex: 0 0 30%; }
+
+  .pane-standalone { border: none; }
+
+  .pane-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pane-series-indicator {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .pane-title,
+  .card-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+    line-height: 1.15;
+  }
+
+  .pane-tag,
+  .card-tag,
+  .card-series {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .pane-excerpt,
+  .card-excerpt {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .pane-glow {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s;
+    background: radial-gradient(ellipse at bottom left, rgba(0,245,255,0.08) 0%, transparent 70%);
+  }
+
+  .pane:hover .pane-glow { opacity: 1; }
+
+  @media (max-width: 767px) {
+    .panes {
+      flex-direction: column;
+      min-height: auto;
+    }
+    .pane {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      min-height: 50svh;
+    }
+    .pane:last-child { border-bottom: none; }
+    /* Disable pane expand on mobile */
+    .panes:has(.pane-0:hover) .pane-0,
+    .panes:has(.pane-0:hover) .pane-1,
+    .panes:has(.pane-1:hover) .pane-1,
+    .panes:has(.pane-1:hover) .pane-0 {
+      flex: 1;
+    }
+  }
+</style>

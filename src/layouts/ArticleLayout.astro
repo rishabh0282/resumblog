@@ -1,0 +1,578 @@
+---
+import Layout from './Layout.astro';
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, date, tags, excerpt, series, seriesOrder, colorScheme, hasInteractiveComponents } = post.data;
+const isLight = colorScheme === 'light';
+
+// Gather series siblings
+let seriesPrev: CollectionEntry<'blog'> | undefined;
+let seriesNext: CollectionEntry<'blog'> | undefined;
+let seriesTotalCount = 0;
+
+if (series) {
+  const allInSeries = await getCollection('blog', (p) =>
+    !p.data.draft && p.data.series === series
+  );
+  allInSeries.sort((a, b) => (a.data.seriesOrder ?? 0) - (b.data.seriesOrder ?? 0));
+  seriesTotalCount = allInSeries.length;
+  const myIndex = allInSeries.findIndex((p) => p.slug === post.slug);
+  seriesPrev = allInSeries[myIndex - 1];
+  seriesNext = allInSeries[myIndex + 1];
+}
+
+// Estimated read time (assumes ~200 wpm)
+// We can't access rendered word count easily here; use excerpt as proxy seed
+const wordCount = 800; // placeholder — real MDX body not accessible in layout scope
+const readTime = Math.max(1, Math.ceil(wordCount / 200));
+
+const formattedDate = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const ogImage = `/og/${post.slug}.png`;
+---
+
+<Layout title={`${title} — Writing`} description={excerpt} ogImage={ogImage}>
+  <!-- Reading progress bar -->
+  <div id="progress-bar" aria-hidden="true"></div>
+
+  <!-- Sticky TOC (injected by JS after render) -->
+  <nav id="toc" class="toc" aria-label="Table of contents">
+    <p class="toc-heading">Contents</p>
+    <ul id="toc-list"></ul>
+    {hasInteractiveComponents && (
+      <p class="toc-interactive-notice">Interactive diagrams available on desktop</p>
+    )}
+  </nav>
+
+  <main class={`article-main ${isLight ? 'scheme-light' : 'scheme-dark'}`}>
+    <!-- Article Hero -->
+    <header class="article-hero">
+      <div class="hero-eyebrow">
+        {tags.map((t) => t).join(' · ')}
+      </div>
+
+      {series && (
+        <div class="series-strip">
+          <span class="series-strip-text">
+            {series} · Part {seriesOrder} of {seriesTotalCount}
+          </span>
+          {seriesPrev && (
+            <a
+              href={`/blog/${seriesPrev.slug}`}
+              class="series-strip-link"
+              aria-label={`Go to Part ${seriesPrev.data.seriesOrder}: ${seriesPrev.data.title}`}
+            >
+              ← Part {seriesPrev.data.seriesOrder}: {seriesPrev.data.title}
+            </a>
+          )}
+          {seriesNext && (
+            <a
+              href={`/blog/${seriesNext.slug}`}
+              class="series-strip-link"
+              aria-label={`Go to Part ${seriesNext.data.seriesOrder}: ${seriesNext.data.title}`}
+            >
+              Part {seriesNext.data.seriesOrder}: {seriesNext.data.title} →
+            </a>
+          )}
+        </div>
+      )}
+
+      <h1 class="article-h1">{title}</h1>
+
+      <div class="article-byline">
+        <span class="byline-author">[Your Name]</span>
+        <span class="byline-sep">·</span>
+        <time class="byline-date" datetime={date.toISOString()}>{formattedDate}</time>
+        <span class="byline-sep">·</span>
+        <span class="byline-readtime">{readTime} min read</span>
+      </div>
+    </header>
+
+    <!-- Reading container -->
+    <div class={`reading-container ${isLight ? 'reading-light' : ''}`}>
+      <article class="prose">
+        <slot />
+      </article>
+    </div>
+
+    <!-- Series Navigation Footer -->
+    {series ? (
+      <footer class="series-footer">
+        <div class="series-col series-col-left">
+          {seriesPrev ? (
+            <a href={`/blog/${seriesPrev.slug}`} class="series-col-link series-col-active">
+              <span class="series-col-label">← Part {seriesPrev.data.seriesOrder}: {seriesPrev.data.title}</span>
+              <span class="series-col-excerpt">{seriesPrev.data.excerpt}</span>
+            </a>
+          ) : (
+            <span class="series-col-inactive">← Part {seriesOrder}: {title}</span>
+          )}
+        </div>
+        <div class="series-col-divider"></div>
+        <div class="series-col series-col-right">
+          {seriesNext ? (
+            <a href={`/blog/${seriesNext.slug}`} class="series-col-link series-col-active">
+              <span class="series-col-label">Part {seriesNext.data.seriesOrder}: {seriesNext.data.title} →</span>
+              <span class="series-col-excerpt">{seriesNext.data.excerpt}</span>
+            </a>
+          ) : (
+            <span class="series-col-inactive">Part {seriesOrder}: {title} →</span>
+          )}
+        </div>
+      </footer>
+    ) : (
+      <!-- Next read card for standalone articles -->
+      <footer class="next-read-footer">
+        <p class="next-read-label">Continue reading</p>
+        <a href="/blog" class="next-read-link glass">
+          <span>Browse all writing →</span>
+        </a>
+      </footer>
+    )}
+  </main>
+
+  <!-- Fixed back arrow -->
+  <a href="/blog" class="back-arrow" aria-label="Back to writing">← Writing</a>
+</Layout>
+
+<style>
+  /* ── Progress bar ──────────────────────────────────────────── */
+  #progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background: var(--accent);
+    z-index: 9998;
+    pointer-events: none;
+  }
+
+  /* ── TOC ───────────────────────────────────────────────────── */
+  .toc {
+    position: fixed;
+    left: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+    z-index: 100;
+  }
+
+  .toc.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toc { opacity: 1; pointer-events: auto; }
+  }
+
+  .toc-heading {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+  }
+
+  #toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  #toc-list li a {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    display: block;
+    line-height: 1.4;
+  }
+
+  #toc-list li.active a { color: var(--accent); }
+
+  .toc-interactive-notice {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+    line-height: 1.4;
+    display: none;
+  }
+
+  /* Show on 768–1280px (where TOC is hidden) */
+  @media (min-width: 768px) and (max-width: 1279px) {
+    .toc-interactive-notice { display: block; }
+  }
+
+  /* Hide TOC below 1280px */
+  @media (max-width: 1279px) {
+    .toc {
+      display: none;
+    }
+  }
+
+  /* ── Article layout ────────────────────────────────────────── */
+  .article-main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 6rem;
+  }
+
+  .article-hero {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .series-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .series-strip-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .series-strip-link:hover { color: var(--accent); }
+
+  .article-h1 {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    letter-spacing: -0.05em;
+    color: var(--text-primary);
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  .article-byline {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .byline-sep { opacity: 0.4; }
+
+  /* ── Reading container ─────────────────────────────────────── */
+  .reading-container {
+    max-width: 65ch;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    background: var(--surface);
+    border-radius: 2px;
+  }
+
+  .reading-light {
+    background: #faf9f6;
+    color: #0f0e17;
+  }
+
+  /* ── Prose styles ──────────────────────────────────────────── */
+  .prose {
+    padding: 2.5rem 0;
+  }
+
+  .prose :global(p) {
+    font-family: 'Source Serif 4', serif;
+    font-size: 18px;
+    line-height: 1.75;
+    color: inherit;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Drop cap on first paragraph first letter */
+  .prose :global(p:first-of-type::first-letter) {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 4.5rem;
+    line-height: 0.75;
+    float: left;
+    margin-right: 0.1em;
+    margin-top: 0.1em;
+    color: var(--text-primary);
+  }
+
+  .reading-light .prose :global(p:first-of-type::first-letter) {
+    color: #0f0e17;
+  }
+
+  .prose :global(h2) {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    letter-spacing: -0.05em;
+    color: var(--text-primary);
+    margin: 2.5rem 0 1rem;
+    line-height: 1.2;
+  }
+
+  .reading-light .prose :global(h2) { color: #0f0e17; }
+
+  .prose :global(h3) {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 400;
+    font-size: 1.3rem;
+    color: var(--gold);
+    margin: 2rem 0 0.75rem;
+  }
+
+  .prose :global(blockquote) {
+    border-left: 2px solid var(--accent);
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic;
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    color: var(--text-muted);
+  }
+
+  .reading-light .prose :global(blockquote) {
+    border-left-color: #b8860b;
+  }
+
+  .prose :global(pre) {
+    border-radius: 4px;
+    padding: 1.25rem;
+    overflow-x: auto;
+    position: relative;
+    margin: 1.5rem 0;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.875rem;
+    background: var(--bg) !important;
+    border: 1px solid var(--border);
+  }
+
+  .prose :global(code:not(pre code)) {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.85em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.1em 0.35em;
+    border-radius: 2px;
+  }
+
+  .prose :global(ul), .prose :global(ol) {
+    font-family: 'Source Serif 4', serif;
+    font-size: 18px;
+    line-height: 1.75;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .prose :global(li) { margin-bottom: 0.5rem; }
+
+  .prose :global(hr) {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .prose :global(a) {
+    color: var(--accent);
+    text-decoration-color: rgba(0, 245, 255, 0.3);
+    transition: text-decoration-color 0.2s;
+  }
+  .prose :global(a:hover) { text-decoration-color: var(--accent); }
+
+  .reading-light .prose :global(a) { color: #0a6e8a; }
+
+  /* ── Series footer ─────────────────────────────────────────── */
+  .series-footer {
+    display: flex;
+    align-items: stretch;
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+    margin-top: 3rem;
+    gap: 0;
+  }
+
+  .series-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 1.5rem;
+  }
+
+  .series-col-divider {
+    width: 1px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .series-col-link {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .series-col-active .series-col-label {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1rem;
+  }
+
+  .series-col-inactive {
+    font-family: 'Geist Mono', monospace;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  .series-col-excerpt {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  /* ── Next read footer (non-series) ────────────────────────── */
+  .next-read-footer {
+    margin-top: 3rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .next-read-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+
+  .next-read-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    border-radius: 4px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .next-read-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── Back arrow ────────────────────────────────────────────── */
+  .back-arrow {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    z-index: 200;
+    transition: color 0.2s;
+  }
+  .back-arrow:hover { color: var(--accent); }
+</style>
+
+<script>
+  // ── Reading progress bar ────────────────────────────────────
+  const bar = document.getElementById('progress-bar');
+  if (bar) {
+    const update = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      bar.style.width = `${pct}%`;
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+
+  // ── TOC: auto-generate from H2/H3, fade in after hero ──────
+  const toc = document.getElementById('toc');
+  const tocList = document.getElementById('toc-list');
+
+  if (toc && tocList) {
+    const headings = Array.from(
+      document.querySelectorAll('.prose h2, .prose h3')
+    ) as HTMLElement[];
+
+    headings.forEach((h, i) => {
+      if (!h.id) h.id = `heading-${i}`;
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = `#${h.id}`;
+      a.textContent = h.textContent ?? '';
+      if (h.tagName === 'H3') a.style.paddingLeft = '0.75rem';
+      li.appendChild(a);
+      tocList.appendChild(li);
+    });
+
+    // Fade in after scrolling past hero (~300px)
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const onScroll = () => {
+        if (window.scrollY > 300) {
+          toc.classList.add('visible');
+          window.removeEventListener('scroll', onScroll);
+        }
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+    } else {
+      toc.classList.add('visible');
+    }
+
+    // Active heading highlight
+    const items = Array.from(tocList.querySelectorAll('li'));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            items.forEach((li) => {
+              const a = li.querySelector('a');
+              li.classList.toggle('active', a?.getAttribute('href') === `#${id}`);
+            });
+          }
+        });
+      },
+      { rootMargin: '-20% 0px -70% 0px' }
+    );
+    headings.forEach((h) => observer.observe(h));
+  }
+</script>

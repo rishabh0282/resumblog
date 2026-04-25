@@ -1,0 +1,52 @@
+---
+interface Props {
+  items: string[];
+}
+const { items } = Astro.props;
+---
+
+<div class="scale-chain" role="list" aria-label="Scale chain">
+  {items.map((item, i) => (
+    <>
+      <span
+        role="listitem"
+        class={`chain-item ${item === '???' ? 'chain-item--accent' : ''}`}
+      >
+        {item}
+      </span>
+      {i < items.length - 1 && (
+        <span class="chain-arrow" aria-hidden="true">→</span>
+      )}
+    </>
+  ))}
+</div>
+
+<style>
+  .scale-chain {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+
+  .chain-item {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .chain-item--accent {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .chain-arrow {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+  }
+</style>

@@ -1,0 +1,69 @@
+---
+interface Stat {
+  num: string;
+  label: string;
+}
+
+interface Props {
+  stats: Stat[];
+}
+
+const { stats } = Astro.props;
+---
+
+<div class="stat-grid" role="list" aria-label="Statistics">
+  {stats.map(({ num, label }) => (
+    <div class="stat-cell" role="listitem">
+      <span class="stat-num">{num}</span>
+      <span class="stat-label">{label}</span>
+    </div>
+  ))}
+</div>
+
+<style>
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .stat-cell {
+    background: var(--surface);
+    padding: 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  /* Light color-scheme override: injected via parent .reading-light */
+  :global(.reading-light) .stat-cell {
+    background: #f0ece4;
+    border-color: #d9d3c7;
+  }
+
+  .stat-num {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  :global(.reading-light) .stat-num {
+    color: #c0392b;
+  }
+
+  .stat-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+  }
+</style>

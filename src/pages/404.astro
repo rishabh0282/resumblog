@@ -1,0 +1,86 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="404 — Page Not Found">
+  <main class="not-found">
+    <div class="terminal">
+      <p class="terminal-prompt">
+        <span class="prompt-prefix">$</span>
+        <span class="prompt-cmd">navigate</span>
+        <span class="prompt-arg">{Astro.url.pathname}</span>
+      </p>
+      <p class="terminal-error">error: page_not_found</p>
+      <p class="terminal-sub">This page doesn't exist. Yet.</p>
+      <div class="terminal-actions">
+        <a href="/" class="terminal-link">cd ~/home</a>
+        <a href="/blog" class="terminal-link">cd ~/writing</a>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .not-found {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .terminal {
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .terminal-prompt {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .prompt-prefix { color: var(--accent); }
+  .prompt-cmd { color: var(--text-primary); }
+  .prompt-arg { color: var(--text-muted); opacity: 0.7; }
+
+  .terminal-error {
+    font-family: 'Geist Mono', monospace;
+    font-size: clamp(1.25rem, 5vw, 2rem);
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  .terminal-sub {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  .terminal-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .terminal-link {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.8rem;
+    border-radius: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .terminal-link:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+</style>
