@@ -11,26 +11,27 @@ export const siteConfig = {
     orcid: 'https://orcid.org/0000-0003-2000-4167',
   },
   aboutMe:
-    'I am a QA Engineer building toward a full SDET profile — combining automation framework design, codebase-level contribution, and a research background in computer vision and deep learning. My work sits at the intersection of engineering quality and AI systems.\n\n' +
-    'At Factech (Jan 2026 – Present), I drive Selenium-based automation and API validation on a legacy AngularJS product, investigate defects to root cause, and contribute to open source — with merged PRs on a production Next.js / Node.js / SQLite application.\n\n' +
-    'At IBM India (Jun 2022 – Jul 2023), I developed and maintained Selenium WebDriver automation frameworks, designed 180+ automated test scripts, reduced regression testing time by 50%, and validated AI/ML model outputs through structured SQL-based checks.\n\n' +
-    'Earlier, as an ML Research Intern at Collaborative Intelligence (Jun 2021 – May 2022), I engineered computer vision pipelines using YOLO architectures and published 5 peer-reviewed papers across IEEE, Springer, and Wiley. I hold ISTQB Foundation Level and Microsoft Azure Fundamentals (AZ-900) certifications, and a B.Tech in Electronics and Communications Engineering from Amity University.',
+    'I am an ISTQB-certified QA engineer with 3+ years of experience building Selenium/Java automation frameworks — at IBM, across freelance SaaS, fintech, and e-commerce projects, and now with Appium mobile testing at Factech. My work sits at the intersection of engineering quality and AI systems.\n\n' +
+    'At Factech (Jan 2026 – Apr 2026), I designed a mobile test automation framework using Appium (Python) and Page Object Model for an Android Visitor Management System, conducted API testing with Postman across multiple modules, and executed 50+ test cases covering functional, security, and integration scenarios.\n\n' +
+    'As a Freelance QA Automation Engineer (Aug 2023 – Dec 2025), I delivered Selenium WebDriver frameworks for 5+ clients across e-commerce, fintech, and SaaS — automating 200+ test cases and reducing manual testing effort by 60%.\n\n' +
+    'At IBM India (Jun 2022 – Jul 2023), I developed automation frameworks, designed 180+ test scripts, reduced regression time by 50%, and integrated suites into Jenkins CI/CD pipelines.\n\n' +
+    'Earlier at Collaborative Intelligence (Jun 2021 – May 2022), I engineered computer vision pipelines using YOLO architectures, improved detection accuracy by 15%+, and co-authored 5 peer-reviewed papers across IEEE, Springer, and Wiley. I hold ISTQB Foundation Level and Microsoft Azure Fundamentals (AZ-900) certifications, and a B.Tech in Electronics and Communications Engineering from Amity University.',
   skillGroups: [
     {
       label: 'Test Automation',
-      skills: ['Selenium WebDriver', 'Playwright', 'TestNG', 'JUnit', 'Page Object Model', 'Data-Driven Testing', 'Cross-Browser Testing', 'Selenium Grid', 'Maven', 'ExtentReports', 'Allure'],
+      skills: ['Selenium WebDriver', 'Appium', 'TestNG', 'JUnit', 'Page Object Model', 'Data-Driven Testing', 'Cross-Browser Testing', 'Selenium Grid', 'Maven', 'ExtentReports', 'Allure'],
     },
     {
       label: 'Testing & QA',
-      skills: ['Regression Testing', 'Functional Testing', 'Integration Testing', 'API Testing', 'Performance Testing', 'Smoke Testing', 'End-to-End Testing', 'BDD/Gherkin', 'Defect Tracking', 'Test Case Design', 'Agile/Scrum'],
+      skills: ['Regression Testing', 'Functional Testing', 'Integration Testing', 'API Testing', 'Mobile Testing', 'Security Testing', 'Performance Testing', 'Smoke Testing', 'End-to-End Testing', 'Defect Tracking', 'Test Case Design', 'Agile/Scrum'],
     },
     {
       label: 'CI/CD & Tools',
-      skills: ['GitHub Actions', 'Jenkins', 'Docker', 'Git', 'JIRA', 'Postman', 'JMeter'],
+      skills: ['GitHub Actions', 'Jenkins', 'Git', 'JIRA', 'Postman', 'JMeter', 'Chrome DevTools', 'Android SDK (ADB)', 'Appium Inspector'],
     },
     {
       label: 'Languages',
-      skills: ['Java', 'Python', 'TypeScript', 'JavaScript'],
+      skills: ['Java', 'Python', 'JavaScript'],
     },
     {
       label: 'AI / ML',
@@ -74,13 +75,24 @@ export const siteConfig = {
   ],
   experience: [
     {
-      company: 'Factech',
-      title: 'QA Engineer',
-      dateRange: 'Jan 2026 – Present',
+      company: 'Factech Automation Solutions',
+      title: 'QA Engineer Trainee',
+      dateRange: 'Jan 2026 – Apr 2026',
       bullets: [
-        'Driving Selenium-based automation and API validation on a legacy AngularJS product with CI-integrated execution.',
-        'Investigating defects to root cause; improving automation stability and reducing flakiness across the test suite.',
-        'Open source contributor — merged PRs on a production Next.js / Node.js / SQLite application.',
+        'Designed and implemented a mobile test automation framework using Appium (Python) and Page Object Model for an Android Visitor Management System; identified 10+ critical defects.',
+        'Conducted end-to-end API testing with Postman across staff management, visitor tracking, and report generation modules; documented 500 Internal Server errors across multiple endpoints.',
+        'Created and executed 50+ test cases covering functional, security, and integration scenarios; tracked all defects in JIRA.',
+        'Configured Appium server, managed Android device connectivity via ADB, and used Chrome DevTools for network analysis and API inspection.',
+      ],
+    },
+    {
+      company: 'Freelance',
+      title: 'QA Automation Engineer',
+      dateRange: 'Aug 2023 – Dec 2025',
+      bullets: [
+        'Delivered Selenium WebDriver-based automation frameworks for 5+ clients across e-commerce, fintech, and SaaS domains; automated 200+ test cases and reduced manual testing effort by 60%.',
+        'Implemented Page Object Model, data-driven testing, and cross-browser solutions using Java, TestNG, and Maven; integrated all suites with Jenkins CI/CD pipelines.',
+        'Generated comprehensive test reports using ExtentReports and Allure; maintained clear defect documentation in JIRA for each client engagement.',
       ],
     },
     {
@@ -90,18 +102,18 @@ export const siteConfig = {
       bullets: [
         'Developed and maintained Selenium WebDriver automation frameworks for enterprise web applications using Java, TestNG, and Page Object Model; reduced regression testing time by 50%.',
         'Designed and executed 180+ automated test scripts across 5 major application modules with cross-browser coverage via Selenium Grid.',
-        'Integrated test suites into Jenkins CI/CD pipelines; collaborated with developers to cut post-release issues by 15%.',
+        'Integrated test suites into Jenkins CI/CD pipelines; collaborated with developers to cut post-release issues by 15% and accelerate sprint cycles by 25%.',
         'Validated AI/ML model outputs and data quality through structured SQL-based checks.',
       ],
     },
     {
       company: 'Collaborative Intelligence Pvt. Ltd.',
-      title: 'ML Research Intern',
+      title: 'AI Engineer (Intern)',
       dateRange: 'Jun 2021 – May 2022',
       bullets: [
-        'Engineered computer vision pipelines using YOLOv4/v8 architectures; improved object detection accuracy by 15%+.',
-        'Validated model outputs rigorously through test datasets and ablation studies.',
-        'Published 5 peer-reviewed papers across IEEE, Springer, and Wiley.',
+        'Built and validated computer vision pipelines using Python and YOLO architectures; improved detection accuracy by 15%+.',
+        'Integrated AI workflows into production systems with automated validation checks and QA processes.',
+        'Work led to 3 peer-reviewed publications; co-authored 5 papers total across IEEE, Springer, and Wiley.',
       ],
     },
   ],
