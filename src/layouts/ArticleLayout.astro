@@ -27,9 +27,9 @@ if (series) {
   seriesNext = allInSeries[myIndex + 1];
 }
 
-// Estimated read time (assumes ~200 wpm)
-// We can't access rendered word count easily here; use excerpt as proxy seed
-const wordCount = 800; // placeholder — real MDX body not accessible in layout scope
+// Estimated read time from raw MDX body (~200 wpm)
+const rawBody = post.body ?? '';
+const wordCount = rawBody.trim().split(/\s+/).length;
 const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
 const formattedDate = date.toLocaleDateString('en-US', {
@@ -90,7 +90,7 @@ const ogImage = `/og/${post.slug}.png`;
       <h1 class="article-h1">{title}</h1>
 
       <div class="article-byline">
-        <span class="byline-author">[Your Name]</span>
+        <span class="byline-author">Rishabh Tiwari</span>
         <span class="byline-sep">·</span>
         <time class="byline-date" datetime={date.toISOString()}>{formattedDate}</time>
         <span class="byline-sep">·</span>
@@ -207,6 +207,23 @@ const ogImage = `/og/${post.slug}.png`;
   }
 
   #toc-list li.active a { color: var(--accent); }
+
+  .toc-toggle {
+    display: block;
+    margin-top: 0.5rem;
+    background: none;
+    border: none;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: color 0.2s;
+  }
+
+  .toc-toggle:hover { color: var(--accent); }
 
   .toc-interactive-notice {
     font-family: 'Geist Mono', monospace;
@@ -533,6 +550,8 @@ const ogImage = `/og/${post.slug}.png`;
       document.querySelectorAll('.prose h2, .prose h3')
     ) as HTMLElement[];
 
+    const VISIBLE_COUNT = 5;
+
     headings.forEach((h, i) => {
       if (!h.id) h.id = `heading-${i}`;
       const li = document.createElement('li');
@@ -540,9 +559,33 @@ const ogImage = `/og/${post.slug}.png`;
       a.href = `#${h.id}`;
       a.textContent = h.textContent ?? '';
       if (h.tagName === 'H3') a.style.paddingLeft = '0.75rem';
+      if (i >= VISIBLE_COUNT) li.classList.add('toc-hidden');
       li.appendChild(a);
       tocList.appendChild(li);
     });
+
+    // Add "show more" toggle if needed
+    if (headings.length > VISIBLE_COUNT) {
+      const toggleBtn = document.createElement('button');
+      toggleBtn.className = 'toc-toggle';
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      const remaining = headings.length - VISIBLE_COUNT;
+      toggleBtn.textContent = `+${remaining} more`;
+      let expanded = false;
+      toggleBtn.addEventListener('click', () => {
+        expanded = !expanded;
+        toggleBtn.setAttribute('aria-expanded', String(expanded));
+        tocList.querySelectorAll('.toc-hidden').forEach((el) => {
+          (el as HTMLElement).style.display = expanded ? '' : 'none';
+        });
+        toggleBtn.textContent = expanded ? 'show less' : `+${remaining} more`;
+      });
+      // Initially hide extra items
+      tocList.querySelectorAll('.toc-hidden').forEach((el) => {
+        (el as HTMLElement).style.display = 'none';
+      });
+      toc.appendChild(toggleBtn);
+    }
 
     // Fade in after scrolling past hero (~300px)
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
