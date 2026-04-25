@@ -1,0 +1,56 @@
+---
+interface Props {
+  type: 'confirmed' | 'original';
+  label: string;
+}
+const { type, label } = Astro.props;
+
+const accentMap: Record<string, string> = {
+  confirmed: '#4eb87a',
+  original: '#00F5FF',
+};
+const accent = accentMap[type] ?? '#888';
+---
+<div class="ev-col" data-type={type} style={`--ev-accent: ${accent};`}>
+  <span class="ev-col-label">{label}</span>
+  <div class="ev-col-body">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .ev-col {
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--ev-accent);
+    border-radius: 0 0 4px 4px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .ev-col-label {
+    display: block;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ev-accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .ev-col-body {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  /* Markdown list inside */
+  .ev-col-body :global(ul) {
+    padding-left: 1.2rem;
+    margin: 0;
+  }
+
+  .ev-col-body :global(li) {
+    margin-bottom: 0.4rem;
+  }
+</style>

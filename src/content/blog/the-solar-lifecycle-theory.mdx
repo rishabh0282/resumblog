@@ -1,5 +1,6 @@
 ---
 title: "The Solar Lifecycle Theory"
+subtitle: "Every planet is the same planet at a different age. The Sun does not merely warm — it transforms."
 date: 2026-04-15
 tags: ["cosmology", "hypothesis", "solar-system", "speculative"]
 excerpt: "Every planet is the same planet at a different age. A speculative framework for understanding planetary evolution as a continuous lifecycle driven by the Sun."
@@ -10,31 +11,306 @@ colorScheme: "dark"
 hasInteractiveComponents: true
 ---
 
-import PlanetOrbitDiagram from '../../components/blog/PlanetOrbitDiagram.astro';
-import HabitableZoneDiagram from '../../components/blog/HabitableZoneDiagram.astro';
+import Lead from '../../components/blog/Lead.astro';
+import StatusGrid from '../../components/blog/StatusGrid.astro';
+import StatusCard from '../../components/blog/StatusCard.astro';
+import ArticleNav from '../../components/blog/ArticleNav.astro';
+import OrbitDiagram from '../../components/blog/OrbitDiagram.astro';
+import HabitableZoneSlider from '../../components/blog/HabitableZoneSlider.astro';
+import MechanismGrid from '../../components/blog/MechanismGrid.astro';
+import MechanismCard from '../../components/blog/MechanismCard.astro';
+import IterationTable from '../../components/blog/IterationTable.astro';
+import Timeline from '../../components/blog/Timeline.astro';
+import TimelineItem from '../../components/blog/TimelineItem.astro';
+import EvidenceGrid from '../../components/blog/EvidenceGrid.astro';
+import EvidenceColumn from '../../components/blog/EvidenceColumn.astro';
+import VenusDiagram from '../../components/blog/VenusDiagram.astro';
+import VenusZone from '../../components/blog/VenusZone.astro';
+import SpeculativeCallout from '../../components/blog/SpeculativeCallout.astro';
+import SectionBreak from '../../components/blog/SectionBreak.astro';
+import Pullquote from '../../components/blog/Pullquote.astro';
+import ArticleFooter from '../../components/blog/ArticleFooter.astro';
 
-## The Core Hypothesis
+## Abstract
 
-Every planet in our solar system is the same planet at a different age. Not metaphorically — structurally. The Sun does not merely warm planets. It transforms them, sequentially, over geological time, as its energy output increases across its main-sequence lifespan.
+<Lead>
+  Stand at the edge of the Valles Marineris on Mars — a canyon that would swallow the entire continental United States — and look up at a sky that is thin, cold, and almost airless. Whatever made this world, something finished with it. The volcanoes are silent. The magnetic field is gone. The oceans, if they existed, are locked in ice or lost to space. Mars is not a failed planet. It may be a finished one.
 
-<PlanetOrbitDiagram />
+  This page presents a speculative cosmological hypothesis built on several real observations and published models. The central claim is original: the planets are not unrelated bodies orbiting a passive star. They may represent sequential stages of one outward-moving lifecycle — each one a world that was built, used, and vacated as the Sun's energy pushed the habitable window further from the centre. Earth is not the destination. It is the current address.
+</Lead>
 
-## The Habitable Zone as a Moving Window
+The strongest version of the article is not "this is proven," but "this is a unifying interpretation worth examining." The references below support recurring scientific inputs such as habitable-zone migration, Venus's potentially temperate past, the Grand Tack model, the Great Red Spot's unresolved behavior, and remnant-core exoplanets.
 
-As the Sun grows hotter, the habitable zone — the band where liquid water can persist on a planetary surface — migrates outward. What was once temperate becomes hostile. What is now frozen will one day be warm.
+<StatusGrid>
+  <StatusCard type="observed" label="Observed">
+    Solar brightening and habitable-zone drift, evidence for a wetter ancient Venus, unusual giant-planet migration models, and stripped planetary cores are all discussed in mainstream literature.
+  </StatusCard>
+  <StatusCard type="inferred" label="Inferred">
+    The article connects those observations into one sequence: one solar pulse, one lifecycle, one repeating outward handoff. That synthesis is interpretive rather than established consensus.
+  </StatusCard>
+  <StatusCard type="speculative" label="Speculative">
+    The strongest speculative layer concerns biological transfer, Venus as a prior Earth-like platform, and the wider philosophical implications. Those sections are intentionally framed as extensions, not evidence.
+  </StatusCard>
+</StatusGrid>
 
-<HabitableZoneDiagram />
-
-## Evidence and Speculation
-
-This framework is part observation, part inference, part original hypothesis. The distinctions matter.
-
-**OBSERVED:** Venus shows signs of ancient water. Mars has dried riverbeds billions of years old. The Sun's luminosity increases approximately 10% per billion years.
-
-**INFERRED:** If the habitable zone moves outward, planets experience a window of habitability then lose it as the Sun brightens.
-
-**SPECULATIVE:** The outer planets — currently frozen — represent future habitable candidates, not permanent wastelands.
+<ArticleNav sections={["Sequence", "Habitable Zone", "Mechanism", "Iterations", "Timeline", "Standing", "Open Problems", "Speculation", "Implication", "Closing", "References"]} />
 
 ---
 
-*Placeholder body — full article text to be dropped in as MDX.*
+## The Sequence — One Lifecycle, Eight Stages
+
+<Lead>
+  What we call planets are snapshots. Each body in the solar system represents one stage in a single continuous process, driven outward by the Sun's expansion.
+</Lead>
+
+<OrbitDiagram
+  bodies={[
+    { name: "Sun",     phase: "Driver",       role: "Energy source — timing mechanism that pushes each stage outward through brightening, pulses, and eventual collapse." },
+    { name: "Mercury", phase: "Ancient",      role: "Oldest readable remnant — a tiny, heavily processed fossil of the earliest surviving rocky stage." },
+    { name: "Venus",   phase: "Degrading",    role: "Prior habitable platform — the remnant of the most recently completed gas giant transition before Earth's source body." },
+    { name: "Earth",   phase: "Active",       role: "Current habitable stage — a remnant from an earlier giant stage now inside the habitable zone during the Sun's main-sequence era." },
+    { name: "Mars",    phase: "Dormant",      role: "Thermal fossil — a dormant remnant whose surface, moon count, and Olympus Mons are interpreted as evidence of an earlier completed transition." },
+    { name: "Jupiter", phase: "Absorbing",    role: "Current giant-stage engine — still in the moon-absorption phase, still storing energy, and eventually expected to leave a rocky remnant." },
+    { name: "Saturn",  phase: "Accumulating", role: "Early giant-stage precursor — still collecting and organising material before moving toward a destabilised transition state." },
+    { name: "Uranus",  phase: "Dormant",      role: "Cold future candidate — outside the current habitable zone but relevant in the red-giant window." },
+    { name: "Neptune", phase: "Intake",       role: "Outer raw-material stage — colder, less processed, waiting for a future solar state to activate it more fully." },
+    { name: "Pluto",   phase: "Awakening",    role: "Distant activation marker — flags when the Sun's red-giant expansion reaches the Kuiper region and begins lighting up the next-iteration reservoir." }
+  ]}
+  note="Planet sizes are schematic, not to scale. Tap or hover any body."
+/>
+
+---
+
+## The Habitable Zone — One Long Breath
+
+<Lead>
+  The habitable zone doesn't expand forever. It follows a complete arc: slowly migrating outward over billions of years, exploding to 49–71 AU during the red giant phase, then collapsing back toward zero as the Sun becomes a white dwarf. Each planet gets a window.
+</Lead>
+
+<HabitableZoneSlider
+  phases={[
+    { label: "Very early solar system",    ageGa: 0.006, hzInner: 0.80, hzOuter: 1.40, desc: "Classical HZ estimate is near 0.80–1.40 AU in this faint-Sun stage, but the system is still in a gas-rich formation era. No mature rocky biosphere claim is made here." },
+    { label: "Early main sequence",         ageGa: 3.0,   hzInner: 0.88, hzOuter: 1.54, desc: "Classical HZ: Earth inside, Venus interior to the band. Model-supported temperate Venus is shown separately from classical HZ occupancy." },
+    { label: "Present-day main sequence",   ageGa: 4.6,   hzInner: 0.95, hzOuter: 1.67, desc: "Classical HZ: Earth remains inside while Venus is clearly interior and dry. Mars is dormant, Phobos is in a confirmed decay spiral, and Jupiter is still absorbing moons." },
+    { label: "Brightening main sequence",   ageGa: 7.0,   hzInner: 1.15, hzOuter: 2.00, desc: "Sun brightens ~10% per billion years. Earth approaches inner edge. HZ migrates toward and past Mars. Jupiter transition likely completed." },
+    { label: "Subgiant phase",              ageGa: 10.0,  hzInner: 3.50, hzOuter: 6.20, desc: "Sun leaves main sequence. Luminosity rises rapidly. HZ sweeps past the asteroid belt toward Jupiter. Jupiter remnant enters the zone for ~500 Myr." },
+    { label: "Red giant",                   ageGa: 11.5,  hzInner: 49.0, hzOuter: 71.0, desc: "Sun expands massively. Mercury and Venus are engulfed. The habitable zone surges outward to ~49–71 AU and briefly activates the Kuiper reservoir." },
+    { label: "White dwarf",                 ageGa: 13.0,  hzInner: 8.0,  hzOuter: 14.0, desc: "Sun collapses to white dwarf. HZ contracts back to ~8–15 AU. Kuiper activation fades, and whether a full next iteration can continue remains unknown." }
+  ]}
+/>
+
+Green indicates the classical orbital band. Venus-style temperate cases shown separately are model-dependent and not part of the simple band.
+
+Planet positions shown at fixed AU. Kuiper Belt bodies are shown as a faint activation reservoir for the next iteration during the red giant window.
+
+**Open unknown:** after white dwarf collapse, remaining luminosity may be insufficient to drive a full next outward iteration.
+
+---
+
+## Core Mechanism — A Proposed Transition Framework
+
+<Lead>
+  In the article's model, the Sun expands in pulses and through continuous brightening. Each pulse ripples outward, destabilising moon systems and triggering transitions from one stage to the next.
+</Lead>
+
+<MechanismGrid>
+  <MechanismCard number="01" label="Trigger" title="Moon collisions drive transitions">
+    As the Sun expands, gravitational dynamics shift. Moons destabilise and fall inward. The collision reheats the core, rebuilds the magnetic field, and triggers the next lifecycle stage.
+  </MechanismCard>
+  <MechanismCard number="02" label="Transformation" title="Gas giants shed mass explosively">
+    Moon collisions eject the gas envelope into space as debris — becoming asteroid belts, rings, and comets. The compressed rocky core that remains is a Chthonian planet: the next rocky world.
+  </MechanismCard>
+  <MechanismCard number="03" label="Clock" title="Moon count as age indicator">
+    Saturn (285) → Jupiter (95, consumed ~190) → Mars (2) → Earth (1) → Venus (0) → Mercury (0). The decay curve is not random. It tracks the lifecycle with precision.
+  </MechanismCard>
+  <MechanismCard number="04" label="Record" title="The Great Red Spot">
+    Jupiter's storm is the thermal signature of ~190 moon absorption events. It is actively shrinking because absorption is ending. The shrinkage we observe is the final frame of a billion-year process.
+  </MechanismCard>
+  <MechanismCard number="05" label="Fossil" title="Olympus Mons is the GRS">
+    Mars's volcano — the largest in the solar system — is the thermal scar of the previous iteration's equivalent storm, baked into the rocky core at transition and feeding one stationary hotspot for 3.5 billion years.
+  </MechanismCard>
+  <MechanismCard number="06" label="Survival" title="Size as a survival requirement">
+    Each iteration must produce a larger remnant than the last because the Sun is continuously expanding. The architecture of the solar system is not accidental — it is a survival mechanism.
+  </MechanismCard>
+</MechanismGrid>
+
+---
+
+## The Iteration Model — Each Cycle Runs at a Different Scale
+
+The solar system is not running one lifecycle. It is running nested, overlapping iterations simultaneously. Jupiter is this iteration's gas giant. Earth is the previous iteration's remnant. Venus the one before that. Mercury the oldest readable record.
+
+Each iteration's gas giant was smaller than the current one — less disk material, younger Sun, smaller feeding zone. The rocky planets are fossils of previous cycles, their sizes reading backwards through time.
+
+<IterationTable
+  columns={["Era", "Gas giant of that era", "Remnant today", "Scale"]}
+  rows={[
+    ["Most ancient", "~1–2 Earth masses, barely qualifies",           "Mercury (0.055×)",   "xs"],
+    ["Older",        "~5–8 Earth masses, small gas giant",            "Venus (0.815×)",     "sm"],
+    ["Previous",     "~50–100 Earth masses, moderate",               "Earth (1.0×)",       "md"],
+    ["Most recent",  "~10–15 Earth masses, Neptune-scale",           "Mars (0.107×)",      "xs"],
+    ["Current",      "318 Earth masses — peak material availability", "Future rocky planet","xl"]
+  ]}
+/>
+
+The mass budget problem that appears when comparing Jupiter (318×) to Mars (0.107×) dissolves entirely when one recognises Mars is not Jupiter's future remnant — it is the remnant of a much smaller, much older iteration's gas giant.
+
+### The Mars Anomaly — Resolved by the Grand Tack
+
+One genuine inconsistency in the iteration sequence: Earth's source body (~50–100 Earth masses) was larger than Mars's source body (~10–15 Earth masses), despite Mars being the more recent iteration. If iterations grow larger over time, this ordering is wrong.
+
+The Grand Tack hypothesis (Walsh et al., 2011) offers a mainstream model that helps with this mismatch. Within the first 10 million years of the solar system, Jupiter migrated inward from roughly 3.5 AU to around 1.5 AU before Saturn's gravitational influence reversed its course. In that model, material is swept away from the Mars orbital zone before Mars's source body can fully accrete. That means Mars can remain the outlier without forcing every iteration to scale monotonically. In the logic of this article, Mars becomes the interrupted transition rather than the disproving one.
+
+---
+
+## Timeline Cascade — Three Timestamps, One Proposed Pulse
+
+The article links several independently dated planetary events to one solar pulse approximately 4 billion years ago, layered on top of the Sun's long-term brightening.
+
+<Timeline>
+  <TimelineItem time="~4.0 Billion Years Ago" title="Pulse reaches the Kuiper Belt">
+    Pluto-Charon kiss-and-capture work published in *Nature Geoscience* in January 2025 is used here as an outer-system anchor point. The article's added step is the interpretation: a pulse gentle enough for capture rather than destruction at that orbital distance.
+  </TimelineItem>
+  <TimelineItem time="~3.8–3.7 Billion Years Ago" title="Mercury's volcanic plains form">
+    Confirmed by MESSENGER crater counts. The same pulse reaches an ancient tiny gas giant closer in — its transition produces flood volcanism across the entire surface rather than a single peak, because the thermal energy was too diffuse to concentrate.
+  </TimelineItem>
+  <TimelineItem time="~3.5 Billion Years Ago" title="Olympus Mons begins building">
+    The previous iteration's Neptune-scale gas giant completes its transition. The thermal scar of that era's storm system locks into the rocky core — becoming the largest volcano in the solar system, fed by that same energy for 3.5 billion uninterrupted years.
+  </TimelineItem>
+  <TimelineItem time="~700 Million Years Ago" title="Venus loses habitability">
+    Not a new pulse — the Sun's continuous brightening finally overwhelms Venus's carbonate-silicate buffering capacity. Simultaneous planet-wide volcanic resurfacing. The geological record of everything before is buried.
+  </TimelineItem>
+  <TimelineItem time="~540 Million Years Ago" title="The Cambrian Explosion">
+    Earth's most dramatic and unexplained biological acceleration. Almost every complex animal body plan appears simultaneously in approximately 20 million years, after 3 billion years of relatively simple life. The coincidence with the closure of Venus's last habitable atmospheric zone is noted — its interpretation remains speculative.
+  </TimelineItem>
+</Timeline>
+
+---
+
+## Scientific Standing — What Is Confirmed vs. What Is Original
+
+The article is strongest when it separates published observations from the original bridge built between them. The framework leans on real anomalies, real mission data, and real literature. The mechanism connecting them remains original and unmodelled.
+
+<EvidenceGrid>
+  <EvidenceColumn type="confirmed" label="Observed in mainstream literature">
+    - Remnant / stripped planetary cores exist — TOI-849b
+    - Habitable zone migration confirmed
+    - Phobos is spiraling inward and will not remain stable indefinitely
+    - Triton death spiral confirmed
+    - Great Red Spot evolution is still scientifically unresolved
+    - Venus may have sustained temperate conditions far longer than once assumed
+    - Pluto-Charon kiss-and-capture modeling entered the literature in 2025
+    - Mars volcanically active — InSight data
+    - Neptune excess internal heat
+    - Uranus axial tilt — impact origin accepted
+    - Mercury volcanic plains ~3.8 Ga — MESSENGER
+  </EvidenceColumn>
+  <EvidenceColumn type="original" label="Original — not yet in literature">
+    - Unified sequential lifecycle as one framework
+    - Moon count decay as lifecycle age indicator
+    - Moon collision as gas giant transition trigger
+    - Iterations of increasing scale as survival mechanism
+    - Asteroid belt as transition debris field
+    - GRS → Olympus Mons thermal fossil connection
+    - Iron gradient as transition completeness record
+    - Solar pulse model triggering sequential transitions
+    - Exo-Mercuries as ancient iteration remnants
+    - Super-Earths as large-iteration Chthonian remnants
+  </EvidenceColumn>
+</EvidenceGrid>
+
+---
+
+## Open Problems — Where the Theory Needs Development
+
+An honest assessment of the unresolved physical problems. These do not invalidate the framework but represent the work that remains.
+
+1. **The moon collision explosion mechanism is unmodelled.** Collision energy from even a large moon may be insufficient to overcome Jupiter's gravitational binding energy (~10³¹ J vs ~10³⁶ J required). A cascade effect or compound mechanism is needed.
+
+2. **Jupiter's core is diffuse.** Juno mission data shows rocky and metallic material dissolved throughout 30–40% of the planet's volume rather than a compact separable core. What remains after ejection may not be as clean as the theory requires.
+
+3. **The gas giant to rocky planet transition timescale is unspecified.** The explosive mechanism needs a physical pathway that can operate on a geologically rapid timescale.
+
+4. **Saturn's 285 moon count includes many tiny recently-discovered irregular moons.** Whether these participate in the lifecycle mechanism the same way large structural moons do requires clarification.
+
+---
+
+## Speculative Extension — Venus as the Previous Earth
+
+This section is clearly labelled as speculative philosophy built on the cosmological framework. It is not evidenced science. It is an exploration of what the framework could imply — and the implication is not a comfortable one.
+
+Venus may have sustained liquid water or temperate conditions for far longer than once assumed in some models. In this article's framework, that makes Venus the remnant of the most recently completed gas giant transition before Earth's source body — which means Venus is not simply a cautionary climate story. It is a portrait of what Earth becomes. Not eventually. On schedule.
+
+<VenusDiagram>
+  <VenusZone name="Cloud Layer" icon="☁" color="gold">
+    50 km altitude — Earth-like temperature and pressure. The last habitable zone on Venus, viable for ~100–200 million years after surface death. Ancient name: *Heaven*.
+  </VenusZone>
+  <VenusZone name="Surface" icon="⚡" color="rust">
+    465°C, 92× Earth's atmospheric pressure. Lethal from ~700 million years ago. Simultaneously, Earth's Cambrian explosion begins. Ancient name: *Hell*.
+  </VenusZone>
+  <VenusZone name="Subsurface" icon="▼" color="teal">
+    Insulated from atmospheric heat. A transitional refuge, potentially habitable for millions of years — until the catastrophic resurfacing event buried everything. Ancient name: *The Underworld*.
+  </VenusZone>
+</VenusDiagram>
+
+<SpeculativeCallout label="Speculative — not evidenced">
+  The Cambrian Explosion (~540 million years ago) — Earth's most dramatic and unexplained biological acceleration — coincides precisely with the closure of Venus's last habitable atmospheric zone. The theory does not replace evolution. Unicellular life originated independently on Earth over 3 billion years. The speculation concerns only the sudden acceleration of complex multicellular body plans in the Cambrian — and whether the arrival of accumulated biological complexity from elsewhere could account for a pace that natural selection alone has not fully explained. This remains speculation built on a framework that is itself unconfirmed.
+</SpeculativeCallout>
+
+What is not speculative is the sequence itself. Venus lost its surface habitability. Its sky, for a window of perhaps 100 to 200 million years afterward, remained Earth-like at altitude — pressures and temperatures in the cloud layer that a human could survive without a pressure suit, suspended above a surface already become uninhabitable. Then that window closed too. The question the framework raises is not whether Venus was once like Earth. It is whether Earth is currently like Venus was — and whether the beings that may have lived through Venus's closing window asked the same questions about their origin that we are now asking about ours.
+
+The connection between Venus's three atmospheric zones and the near-universal ancient human tripartite cosmology — Heaven above, Earth in the middle, Underworld below — is noted as a structural convergence whose origin is unknown. It may be coincidence. It may be the residue of a cultural memory so old it predates writing, carried forward through oral tradition from people who watched their sky change and built their cosmology around the last three places something could survive. Its interpretation is, and should remain, left to the reader.
+
+---
+
+## Implication — Life as a Passenger, Not an Accident
+
+If the planetary lifecycle is real, and if intelligence tends to emerge given sufficient time in a habitable window, then the solar system has been building toward greater biological complexity for billions of years — not through any guiding intention, but through the simple mechanics of each transition leaving a larger, more capable platform than the last.
+
+Each iteration gives the universe slightly more time to produce intelligence that escapes the window entirely. Jupiter's future remnant will be larger than Earth, further from the Sun, with a freshly reheated core and icy moon water delivery. The most habitable platform this solar system will have ever produced — if life is already in the loop.
+
+<Pullquote>
+  The Fermi Paradox's silence may not be the silence of absence. It may be the silence of transit — intelligence that appears on one platform and moves to the next before the signal from the first one has even arrived.
+</Pullquote>
+
+---
+
+## Why It Matters If It Is True
+
+A theory does not need to be confirmed to change the question. This one changes it completely.
+
+If the Solar Lifecycle Theory is wrong in its mechanism but right in its intuition — that the planets are not a random collection of objects but a sequence with a direction — then the implications extend far beyond cosmology. They extend to what we think we are doing here.
+
+Every civilisation that has ever looked up has assumed, in some form, that it was the first. The intended occupant of a stage built specifically for it. The lifecycle framework says something different: that intelligence is the solar system's way of not losing the thread between iterations. That what we are accumulating — knowledge, biology, the ability to recognise what is happening — is not for us. It is for whoever builds the bridge to the next platform.
+
+Jupiter's future remnant will be a rocky world larger than Earth, sitting in a habitable zone warmed by a sub-giant Sun, with a freshly reheated core and an outer system full of water. If there is no one on it when that window opens, the sequence continues without a witness. If there is, whatever they know will have come, in part, from here.
+
+<SectionBreak />
+
+The theory is unconfirmed. The mechanism is unmodelled. The physical problems listed above are real, and they may be fatal to the framework in its current form. But the question the theory poses survives even if the theory does not: *what are the planets for?* Science has a good answer about how they formed. It does not yet have a satisfying answer about whether their arrangement, their sequence, their timing — means anything at all.
+
+This article is a first attempt to suggest that it might.
+
+---
+
+## References
+
+The citations below support recurring mainstream-science inputs used by the article. They do not validate the article's original lifecycle hypothesis; they anchor the observations the hypothesis is built around.
+
+1. Walsh et al. (2011), *Nature*: "A low mass for Mars from Jupiter's early gas-driven migration." The core Grand Tack source used for the Mars anomaly discussion.
+
+2. NASA summary of Way et al. climate modeling on ancient Venus. Supports the article's use of a longer-lived temperate Venus.
+
+3. NASA science page on Phobos. Supports the inward orbital decay / instability framing for Mars's inner moon.
+
+4. NASA: "Jupiter's Great Red Spot: A Swirling Mystery." Supports the article's use of the storm as a real unresolved phenomenon, even though the article's interpretation of it is original.
+
+5. *Nature Geoscience* (2025): Pluto-Charon formation via a grazing "kiss-and-capture" style event. Used as the article's outer-system timestamp anchor.
+
+6. Armstrong et al. (2020), *Nature*: "A remnant planetary core in the hot-Neptune desert." Supports the claim that stripped / remnant cores are plausible observed outcomes in exoplanet systems.
+
+---
+
+<ArticleFooter>
+  This theory was developed in conversation and has not been peer reviewed or formally modelled. The planetary lifecycle framework is original. The confirmed science cited is independently verified. The speculative extensions are clearly labelled as such throughout. The physical mechanism for gas giant transitions remains the primary open problem requiring development.
+</ArticleFooter>
