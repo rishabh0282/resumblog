@@ -1,5 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import About from '../components/About.astro';
+import Projects from '../components/Projects.astro';
+import Publications from '../components/Publications.astro';
+import Certifications from '../components/Certifications.astro';
+import Education from '../components/Education.astro';
 
 const roles = [
   {
@@ -75,6 +80,12 @@ const roles = [
       ))}
     </div>
   </section>
+
+  <About />
+  <Projects />
+  <Publications />
+  <Certifications />
+  <Education />
 
   <!-- Footer -->
   <footer class="site-footer">
