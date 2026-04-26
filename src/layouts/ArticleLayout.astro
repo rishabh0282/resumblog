@@ -8,7 +8,7 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { title, date, tags, excerpt, series, seriesOrder, colorScheme, hasInteractiveComponents } = post.data;
+const { title, date, tags, excerpt, series, seriesOrder, colorScheme, hasInteractiveComponents, poster } = post.data;
 const isLight = colorScheme === 'light';
 
 // Gather series siblings
@@ -27,9 +27,9 @@ if (series) {
   seriesNext = allInSeries[myIndex + 1];
 }
 
-// Estimated read time (assumes ~200 wpm)
-// We can't access rendered word count easily here; use excerpt as proxy seed
-const wordCount = 800; // placeholder — real MDX body not accessible in layout scope
+// Estimated read time from raw MDX body (~200 wpm)
+const rawBody = post.body ?? '';
+const wordCount = rawBody.trim().split(/\s+/).length;
 const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
 const formattedDate = date.toLocaleDateString('en-US', {
@@ -41,7 +41,7 @@ const formattedDate = date.toLocaleDateString('en-US', {
 const ogImage = `/og/${post.slug}.png`;
 ---
 
-<Layout title={`${title} — Writing`} description={excerpt} ogImage={ogImage}>
+<Layout title={`${title} - Writing`} description={excerpt} ogImage={ogImage}>
   <!-- Reading progress bar -->
   <div id="progress-bar" aria-hidden="true"></div>
 
@@ -56,7 +56,13 @@ const ogImage = `/og/${post.slug}.png`;
 
   <main class={`article-main ${isLight ? 'scheme-light' : 'scheme-dark'}`}>
     <!-- Article Hero -->
-    <header class="article-hero">
+    <header class={`article-hero ${poster ? 'article-hero-poster' : ''}`}>
+      {poster && (
+        <div class="article-poster-bg" aria-hidden="true">
+          <img src={poster} alt="" class="article-poster-img" />
+          <div class="article-poster-overlay overlay-dark"></div>
+        </div>
+      )}
       <div class="hero-eyebrow">
         {tags.map((t) => t).join(' · ')}
       </div>
@@ -90,7 +96,7 @@ const ogImage = `/og/${post.slug}.png`;
       <h1 class="article-h1">{title}</h1>
 
       <div class="article-byline">
-        <span class="byline-author">[Your Name]</span>
+        <span class="byline-author">Rishabh Tiwari</span>
         <span class="byline-sep">·</span>
         <time class="byline-date" datetime={date.toISOString()}>{formattedDate}</time>
         <span class="byline-sep">·</span>
@@ -149,13 +155,17 @@ const ogImage = `/og/${post.slug}.png`;
   /* ── Progress bar ──────────────────────────────────────────── */
   #progress-bar {
     position: fixed;
-    top: 0;
+    top: 44px;
     left: 0;
     height: 2px;
     width: 0%;
     background: var(--accent);
-    z-index: 9998;
+    z-index: 9997;
     pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    #progress-bar { transition: width 0.1s linear; }
   }
 
   /* ── TOC ───────────────────────────────────────────────────── */
@@ -189,24 +199,54 @@ const ogImage = `/og/${post.slug}.png`;
     margin-bottom: 0.75rem;
   }
 
-  #toc-list {
+  :global(#toc-list) {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0;
   }
 
-  #toc-list li a {
+  :global(#toc-list li) {
+    border-left: 2px solid var(--border);
+    padding: 0.3rem 0 0.3rem 0.75rem;
+    transition: border-color 0.2s;
+  }
+
+  :global(#toc-list li a) {
     font-family: 'Geist Mono', monospace;
-    font-size: 0.7rem;
+    font-size: 0.62rem;
     color: var(--text-muted);
+    opacity: 0.45;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.25s, font-size 0.25s, opacity 0.25s;
     display: block;
     line-height: 1.4;
   }
 
-  #toc-list li.active a { color: var(--accent); }
+  :global(#toc-list li.toc-h3) {
+    padding-left: 1.25rem;
+  }
+
+  :global(#toc-list li.active) {
+    border-left: 2px solid var(--accent);
+  }
+
+  :global(#toc-list li.active a) {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    opacity: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .toc-overflow {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+    letter-spacing: 0.06em;
+    margin: 0.15rem 0;
+  }
 
   .toc-interactive-notice {
     font-family: 'Geist Mono', monospace;
@@ -239,6 +279,67 @@ const ogImage = `/og/${post.slug}.png`;
   .article-hero {
     margin-bottom: 3rem;
     text-align: center;
+  }
+
+  /* ── Poster hero ───────────────────────────────────────────── */
+  .article-hero-poster {
+    position: relative;
+    margin: -4rem -1.5rem 3rem;
+    padding: 5rem 1.5rem 4rem;
+    overflow: hidden;
+  }
+
+  .article-poster-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .article-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  .article-poster-overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .overlay-dark {
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 10, 10, 0.55) 0%,
+      rgba(10, 10, 10, 0.75) 40%,
+      rgba(10, 10, 10, 0.88) 70%,
+      rgba(10, 10, 10, 0.97) 100%
+    );
+  }
+
+  .overlay-light {
+    background: linear-gradient(
+      to bottom,
+      rgba(250, 249, 246, 0.45) 0%,
+      rgba(250, 249, 246, 0.7) 40%,
+      rgba(250, 249, 246, 0.9) 70%,
+      rgba(250, 249, 246, 0.98) 100%
+    );
+  }
+
+  .article-hero-poster .hero-eyebrow,
+  .article-hero-poster .series-strip,
+  .article-hero-poster .article-h1,
+  .article-hero-poster .article-byline {
+    position: relative;
+    z-index: 1;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .article-hero-poster .article-h1 {
+    color: #ffffff;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
   }
 
   .hero-eyebrow {
@@ -524,7 +625,7 @@ const ogImage = `/og/${post.slug}.png`;
     update();
   }
 
-  // ── TOC: auto-generate from H2/H3, fade in after hero ──────
+  // ── TOC: auto-generate from H2/H3, sliding window of 5 ─────
   const toc = document.getElementById('toc');
   const tocList = document.getElementById('toc-list');
 
@@ -533,46 +634,85 @@ const ogImage = `/og/${post.slug}.png`;
       document.querySelectorAll('.prose h2, .prose h3')
     ) as HTMLElement[];
 
-    headings.forEach((h, i) => {
-      if (!h.id) h.id = `heading-${i}`;
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = `#${h.id}`;
-      a.textContent = h.textContent ?? '';
-      if (h.tagName === 'H3') a.style.paddingLeft = '0.75rem';
-      li.appendChild(a);
-      tocList.appendChild(li);
-    });
+    if (headings.length > 0) {
+      const WINDOW = 5;
+      const items: HTMLLIElement[] = [];
 
-    // Fade in after scrolling past hero (~300px)
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const onScroll = () => {
-        if (window.scrollY > 300) {
-          toc.classList.add('visible');
-          window.removeEventListener('scroll', onScroll);
-        }
-      };
-      window.addEventListener('scroll', onScroll, { passive: true });
-    } else {
-      toc.classList.add('visible');
-    }
+      // Build list items
+      headings.forEach((h, i) => {
+        if (!h.id) h.id = `heading-${i}`;
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `#${h.id}`;
+        a.textContent = h.textContent ?? '';
+        if (h.tagName === 'H3') li.classList.add('toc-h3');
+        li.appendChild(a);
+        tocList.appendChild(li);
+        items.push(li);
+      });
 
-    // Active heading highlight
-    const items = Array.from(tocList.querySelectorAll('li'));
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.id;
-            items.forEach((li) => {
-              const a = li.querySelector('a');
-              li.classList.toggle('active', a?.getAttribute('href') === `#${id}`);
-            });
+      // Create overflow hint elements
+      const aboveEl = document.createElement('p');
+      aboveEl.className = 'toc-overflow toc-above';
+      aboveEl.style.visibility = 'hidden';
+      tocList.before(aboveEl);
+
+      const belowEl = document.createElement('p');
+      belowEl.className = 'toc-overflow toc-below';
+      belowEl.style.visibility = 'hidden';
+      tocList.after(belowEl);
+
+      // Fade in after scrolling past hero (~300px)
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const onScrollShow = () => {
+          if (window.scrollY > 300) {
+            toc.classList.add('visible');
+            window.removeEventListener('scroll', onScrollShow);
           }
+        };
+        window.addEventListener('scroll', onScrollShow, { passive: true });
+      } else {
+        toc.classList.add('visible');
+      }
+
+      // Find index of topmost heading that has scrolled past 25% viewport
+      const getActiveIndex = (): number => {
+        const threshold = window.innerHeight * 0.25;
+        let idx = 0;
+        for (let i = 0; i < headings.length; i++) {
+          if (headings[i].getBoundingClientRect().top <= threshold) {
+            idx = i;
+          } else {
+            break;
+          }
+        }
+        return idx;
+      };
+
+      // Sliding window of WINDOW items centred on active
+      const updateTOC = () => {
+        const activeIdx = getActiveIndex();
+
+        let start = Math.max(0, activeIdx - Math.floor(WINDOW / 2));
+        const end = Math.min(headings.length, start + WINDOW);
+        start = Math.max(0, end - WINDOW);
+
+        const aboveCount = start;
+        const belowCount = Math.max(0, headings.length - end);
+
+        items.forEach((li, i) => {
+          li.classList.toggle('active', i === activeIdx);
+          li.style.display = i >= start && i < end ? '' : 'none';
         });
-      },
-      { rootMargin: '-20% 0px -70% 0px' }
-    );
-    headings.forEach((h) => observer.observe(h));
+
+        aboveEl.textContent = aboveCount > 0 ? `↑ ${aboveCount} more` : '';
+        aboveEl.style.visibility = aboveCount > 0 ? 'visible' : 'hidden';
+        belowEl.textContent = belowCount > 0 ? `↓ ${belowCount} more` : '';
+        belowEl.style.visibility = belowCount > 0 ? 'visible' : 'hidden';
+      };
+
+      window.addEventListener('scroll', updateTOC, { passive: true });
+      updateTOC();
+    }
   }
 </script>

@@ -1,0 +1,66 @@
+---
+interface Props {
+  time: string;
+  title: string;
+}
+const { time, title } = Astro.props;
+---
+<div class="tl-item">
+  <div class="tl-dot" aria-hidden="true"></div>
+  <div class="tl-content">
+    <span class="tl-time">{time}</span>
+    <h3 class="tl-title">{title}</h3>
+    <div class="tl-body">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  .tl-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 1rem;
+  }
+
+  .tl-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .tl-dot {
+    position: absolute;
+    left: -1.625rem;
+    top: 0.45rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(0, 245, 255, 0.4);
+  }
+
+  .tl-time {
+    display: block;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    opacity: 0.8;
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.04em;
+  }
+
+  .tl-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem;
+    line-height: 1.35;
+  }
+
+  .tl-body {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.925rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+  }
+</style>

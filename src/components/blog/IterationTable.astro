@@ -1,0 +1,100 @@
+---
+interface Props {
+  columns: string[];
+  rows: string[][];
+}
+const { columns, rows } = Astro.props;
+
+const scaleClass: Record<string, string> = {
+  xs: 'scale-xs',
+  sm: 'scale-sm',
+  md: 'scale-md',
+  xl: 'scale-xl',
+};
+---
+<div class="iter-table-wrap">
+  <table class="iter-table">
+    <thead>
+      <tr>
+        {columns.map((col) => <th>{col}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => {
+        const scaleKey = row[row.length - 1];
+        const cls = scaleClass[scaleKey] ?? '';
+        return (
+          <tr class={cls}>
+            {row.slice(0, -1).map((cell) => <td>{cell}</td>)}
+            <td>
+              <span class={`scale-pip ${cls}`} aria-label={scaleKey}></span>
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .iter-table-wrap {
+    margin: 2rem 0;
+    overflow-x: auto;
+  }
+
+  .iter-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.9rem;
+  }
+
+  .iter-table th {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .iter-table td {
+    padding: 0.65rem 0.75rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    vertical-align: middle;
+    line-height: 1.5;
+  }
+
+  .iter-table td:first-child {
+    color: var(--text-primary);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .iter-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Scale pip indicators */
+  .scale-pip {
+    display: inline-block;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--accent);
+    opacity: 0.6;
+  }
+
+  .scale-pip.scale-xs { width: 16px; }
+  .scale-pip.scale-sm { width: 28px; }
+  .scale-pip.scale-md { width: 44px; }
+  .scale-pip.scale-xl { width: 72px; opacity: 0.9; }
+
+  /* Highlight current iteration row */
+  tr.scale-xl td {
+    color: var(--text-primary);
+  }
+</style>

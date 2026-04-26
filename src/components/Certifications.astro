@@ -1,0 +1,124 @@
+---
+import { siteConfig } from '../config';
+---
+
+<section id="certifications" class="certs-section">
+  <div class="section-inner">
+    <div class="section-heading">
+      <h2>Certifications</h2>
+      <div class="heading-rule"></div>
+    </div>
+
+    <div class="certs-grid">
+      {siteConfig.certifications.map((cert) => (
+        <div class="cert-card glass">
+          {cert.badge && (
+            <img
+              src={cert.badge}
+              alt={`${cert.name} badge`}
+              class="cert-badge"
+              loading="lazy"
+            />
+          )}
+          <div class="cert-body">
+            <h3 class="cert-name">{cert.name}</h3>
+            <p class="cert-meta">{cert.issuer} · {cert.date}</p>
+            {cert.description && <p class="cert-desc">{cert.description}</p>}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .certs-section {
+    padding: 6rem clamp(1.5rem, 6vw, 6rem);
+    border-top: 1px solid var(--border);
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-heading {
+    margin-bottom: 3.5rem;
+  }
+
+  .section-heading h2 {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+  }
+
+  .heading-rule {
+    width: 3rem;
+    height: 3px;
+    background: var(--accent);
+    margin-top: 0.75rem;
+    border-radius: 2px;
+  }
+
+  .certs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .cert-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-radius: 4px;
+    transition: border-color 0.2s;
+  }
+
+  .cert-card:hover {
+    border-color: var(--accent);
+  }
+
+  .cert-badge {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: #fff;
+    padding: 4px;
+  }
+
+  .cert-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cert-name {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    line-height: 1.3;
+    margin-bottom: 0.25rem;
+  }
+
+  .cert-meta {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    opacity: 0.7;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.5rem;
+  }
+
+  .cert-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+</style>

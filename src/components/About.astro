@@ -1,0 +1,178 @@
+---
+import { siteConfig } from '../config';
+---
+
+<section id="about" class="about-section">
+  <div class="section-inner">
+    <div class="section-heading">
+      <h2>About</h2>
+      <div class="heading-rule"></div>
+    </div>
+
+    <div class="about-grid">
+      <!-- Left: bio + stat cards -->
+      <div class="about-left">
+        <p class="bio-text">{siteConfig.aboutMe}</p>
+
+        <div class="stat-cards">
+          <div class="stat-card glass">
+            <span class="stat-number">4+</span>
+            <span class="stat-label">Years Experience</span>
+          </div>
+          <div class="stat-card glass">
+            <span class="stat-number">5</span>
+            <span class="stat-label">Publications</span>
+          </div>
+          <div class="stat-card glass">
+            <span class="stat-number">3</span>
+            <span class="stat-label">Certifications</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: grouped skills -->
+      <div class="about-right">
+        <h3 class="skills-heading">Skills</h3>
+        {siteConfig.skillGroups.map((group) => (
+          <div class="skill-group">
+            <p class="skill-group-label">{group.label}</p>
+            <div class="skill-tags">
+              {group.skills.map((s) => <span class="tag">{s}</span>)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-section {
+    padding: 6rem clamp(1.5rem, 6vw, 6rem);
+    border-top: 1px solid var(--border);
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-heading {
+    margin-bottom: 3.5rem;
+  }
+
+  .section-heading h2 {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+  }
+
+  .heading-rule {
+    width: 3rem;
+    height: 3px;
+    background: var(--accent);
+    margin-top: 0.75rem;
+    border-radius: 2px;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+  }
+
+  /* Bio */
+  .bio-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    white-space: pre-line;
+    margin-bottom: 2.5rem;
+  }
+
+  /* Stat cards */
+  .stat-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.4rem;
+    border-radius: 4px;
+  }
+
+  .stat-number {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: -0.04em;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Skills */
+  .skills-heading {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+  }
+
+  .skill-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .skill-group-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tag {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .tag:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+  }
+</style>

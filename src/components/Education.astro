@@ -1,0 +1,134 @@
+---
+import { siteConfig } from '../config';
+---
+
+<section id="education" class="education-section">
+  <div class="section-inner">
+    <div class="section-heading">
+      <h2>Education</h2>
+      <div class="heading-rule"></div>
+    </div>
+
+    <div class="edu-list">
+      {siteConfig.education.map((edu) => (
+        <div class="edu-card glass">
+          <div class="edu-main">
+            <h3 class="edu-degree">{edu.degree}</h3>
+            <div class="edu-meta">
+              <span class="edu-school">{edu.school}</span>
+              <span class="edu-date">{edu.dateRange}</span>
+            </div>
+          </div>
+          {edu.achievements && edu.achievements.length > 0 && (
+            <ul class="edu-achievements">
+              {edu.achievements.map((a) => <li>{a}</li>)}
+            </ul>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .education-section {
+    padding: 6rem clamp(1.5rem, 6vw, 6rem);
+    border-top: 1px solid var(--border);
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-heading {
+    margin-bottom: 3.5rem;
+  }
+
+  .section-heading h2 {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+  }
+
+  .heading-rule {
+    width: 3rem;
+    height: 3px;
+    background: var(--accent);
+    margin-top: 0.75rem;
+    border-radius: 2px;
+  }
+
+  .edu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .edu-card {
+    padding: 1.75rem 2rem;
+    border-radius: 4px;
+    transition: border-color 0.2s;
+  }
+
+  .edu-card:hover {
+    border-color: var(--accent);
+  }
+
+  .edu-degree {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+  }
+
+  .edu-meta {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .edu-school {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  .edu-date {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    opacity: 0.7;
+    letter-spacing: 0.04em;
+  }
+
+  .edu-achievements {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .edu-achievements li {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    padding-left: 1rem;
+    position: relative;
+  }
+
+  .edu-achievements li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    opacity: 0.6;
+  }
+</style>

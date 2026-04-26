@@ -1,37 +1,17 @@
 ---
 title: "The Solar Lifecycle Theory"
 subtitle: "Every planet is the same planet at a different age. The Sun does not merely warm - it transforms."
-date: 2026-04-15
-tags: ["cosmology", "hypothesis", "solar-system", "speculative"]
-excerpt: "Every planet is the same planet at a different age. A speculative framework for understanding planetary evolution as a continuous lifecycle driven by the Sun."
-draft: false
-series: "At a Different Scale"
-seriesOrder: 2
-colorScheme: "dark"
-hasInteractiveComponents: true
-poster: "/article2-poster.png"
-cardImage: "/article2.png"
+category: "An Original Cosmological Hypothesis"
+keywords: ["solar lifecycle", "planetary lifecycle", "habitable zone", "gas giant transition", "Olympus Mons", "Great Red Spot", "chthonian planet", "cosmology"]
 ---
 
-import Lead from '../../components/blog/Lead.astro';
-import StatusGrid from '../../components/blog/StatusGrid.astro';
-import StatusCard from '../../components/blog/StatusCard.astro';
-import ArticleNav from '../../components/blog/ArticleNav.astro';
-import OrbitDiagram from '../../components/blog/OrbitDiagram.astro';
-import HabitableZoneLifecycle from '../../components/blog/HabitableZoneLifecycle.astro';
-import MechanismGrid from '../../components/blog/MechanismGrid.astro';
-import MechanismCard from '../../components/blog/MechanismCard.astro';
-import IterationTable from '../../components/blog/IterationTable.astro';
-import Timeline from '../../components/blog/Timeline.astro';
-import TimelineItem from '../../components/blog/TimelineItem.astro';
-import EvidenceGrid from '../../components/blog/EvidenceGrid.astro';
-import EvidenceColumn from '../../components/blog/EvidenceColumn.astro';
-import VenusDiagram from '../../components/blog/VenusDiagram.astro';
-import VenusZone from '../../components/blog/VenusZone.astro';
-import SpeculativeCallout from '../../components/blog/SpeculativeCallout.astro';
-import SectionBreak from '../../components/blog/SectionBreak.astro';
-import Pullquote from '../../components/blog/Pullquote.astro';
-import ArticleFooter from '../../components/blog/ArticleFooter.astro';
+<Hero
+  eyebrow="An Original Cosmological Hypothesis"
+  title="The Solar Lifecycle Theory"
+  subtitle="Every planet is the same planet at a different age. The Sun does not merely warm - it transforms."
+/>
+
+---
 
 ## Abstract
 
@@ -67,16 +47,16 @@ The strongest version of the article is not "this is proven," but "this is a uni
 
 <OrbitDiagram
   bodies={[
-    { name: "Sun",     phase: "Driver",       role: "Energy source - timing mechanism that pushes each stage outward through brightening, pulses, and eventual collapse." },
-    { name: "Mercury", phase: "Ancient",      role: "Oldest readable remnant - a tiny, heavily processed fossil of the earliest surviving rocky stage." },
-    { name: "Venus",   phase: "Degrading",    role: "Prior habitable platform - the remnant of the most recently completed gas giant transition before Earth's source body." },
-    { name: "Earth",   phase: "Active",       role: "Current habitable stage - a remnant from an earlier giant stage now inside the habitable zone during the Sun's main-sequence era." },
-    { name: "Mars",    phase: "Dormant",      role: "Thermal fossil - a dormant remnant whose surface, moon count, and Olympus Mons are interpreted as evidence of an earlier completed transition." },
-    { name: "Jupiter", phase: "Absorbing",    role: "Current giant-stage engine - still in the moon-absorption phase, still storing energy, and eventually expected to leave a rocky remnant." },
-    { name: "Saturn",  phase: "Accumulating", role: "Early giant-stage precursor - still collecting and organising material before moving toward a destabilised transition state." },
-    { name: "Uranus",  phase: "Dormant",      role: "Cold future candidate - outside the current habitable zone but relevant in the red-giant window." },
-    { name: "Neptune", phase: "Intake",       role: "Outer raw-material stage - colder, less processed, waiting for a future solar state to activate it more fully." },
-    { name: "Pluto",   phase: "Awakening",    role: "Distant activation marker - flags when the Sun's red-giant expansion reaches the Kuiper region and begins lighting up the next-iteration reservoir." }
+    { name: "Sun",     phase: "Driver",      role: "Energy source - timing mechanism that pushes each stage outward through brightening, pulses, and eventual collapse." },
+    { name: "Mercury", phase: "Ancient",     role: "Oldest readable remnant - a tiny, heavily processed fossil of the earliest surviving rocky stage." },
+    { name: "Venus",   phase: "Degrading",   role: "Prior habitable platform - the remnant of the most recently completed gas giant transition before Earth's source body." },
+    { name: "Earth",   phase: "Active",      role: "Current habitable stage - a remnant from an earlier giant stage now inside the habitable zone during the Sun's main-sequence era." },
+    { name: "Mars",    phase: "Dormant",     role: "Thermal fossil - a dormant remnant whose surface, moon count, and Olympus Mons are interpreted as evidence of an earlier completed transition." },
+    { name: "Jupiter", phase: "Absorbing",   role: "Current giant-stage engine - still in the moon-absorption phase, still storing energy, and eventually expected to leave a rocky remnant." },
+    { name: "Saturn",  phase: "Accumulating",role: "Early giant-stage precursor - still collecting and organising material before moving toward a destabilised transition state." },
+    { name: "Uranus",  phase: "Dormant",     role: "Cold future candidate - outside the current habitable zone but relevant in the red-giant window." },
+    { name: "Neptune", phase: "Intake",      role: "Outer raw-material stage - colder, less processed, waiting for a future solar state to activate it more fully." },
+    { name: "Pluto",   phase: "Awakening",   role: "Distant activation marker - flags when the Sun's red-giant expansion reaches the Kuiper region and begins lighting up the next-iteration reservoir." }
   ]}
   note="Planet sizes are schematic, not to scale. Tap or hover any body."
 />
@@ -89,7 +69,18 @@ The strongest version of the article is not "this is proven," but "this is a uni
   The habitable zone doesn't expand forever. It follows a complete arc: slowly migrating outward over billions of years, exploding to 49–71 AU during the red giant phase, then collapsing back toward zero as the Sun becomes a white dwarf. Each planet gets a window.
 </Lead>
 
-<HabitableZoneLifecycle />
+<HabitableZoneSlider
+  phases={[
+    { label: "Very early solar system",    ageGa: 0.006, hzInner: 0.80, hzOuter: 1.40, desc: "Classical HZ estimate is near 0.80–1.40 AU in this faint-Sun stage, but the system is still in a gas-rich formation era. No mature rocky biosphere claim is made here." },
+    { label: "Early main sequence",         ageGa: 3.0,   hzInner: 0.88, hzOuter: 1.54, desc: "Classical HZ: Earth inside, Venus interior to the band. Model-supported temperate Venus is shown separately from classical HZ occupancy." },
+    { label: "Present-day main sequence",   ageGa: 4.6,   hzInner: 0.95, hzOuter: 1.67, desc: "Classical HZ: Earth remains inside while Venus is clearly interior and dry. Mars is dormant, Phobos is in a confirmed decay spiral, and Jupiter is still absorbing moons." },
+    { label: "Brightening main sequence",   ageGa: 7.0,   hzInner: 1.15, hzOuter: 2.00, desc: "Sun brightens ~10% per billion years. Earth approaches inner edge. HZ migrates toward and past Mars. Jupiter transition likely completed." },
+    { label: "Subgiant phase",              ageGa: 10.0,  hzInner: 3.50, hzOuter: 6.20, desc: "Sun leaves main sequence. Luminosity rises rapidly. HZ sweeps past the asteroid belt toward Jupiter. Jupiter remnant enters the zone for ~500 Myr." },
+    { label: "Red giant",                   ageGa: 11.5,  hzInner: 49.0, hzOuter: 71.0, desc: "Sun expands massively. Mercury and Venus are engulfed. The habitable zone surges outward to ~49–71 AU and briefly activates the Kuiper reservoir." },
+    { label: "White dwarf",                 ageGa: 13.0,  hzInner: 8.0,  hzOuter: 14.0, desc: "Sun collapses to white dwarf. HZ contracts back to ~8–15 AU. Kuiper activation fades, and whether a full next iteration can continue remains unknown." }
+  ]}
+  aria-label="Animated diagram of the solar system showing the habitable zone migrating outward as the Sun evolves from main sequence through red giant to white dwarf."
+/>
 
 Green indicates the classical orbital band. Venus-style temperate cases shown separately are model-dependent and not part of the simple band.
 
@@ -135,13 +126,13 @@ The solar system is not running one lifecycle. It is running nested, overlapping
 Each iteration's gas giant was smaller than the current one - less disk material, younger Sun, smaller feeding zone. The rocky planets are fossils of previous cycles, their sizes reading backwards through time.
 
 <IterationTable
-  columns={["Era", "Gas giant of that era", "Remnant today", "Scale"]}
+  columns={["Era", "Gas giant of that era", "Remnant today", "Relative scale"]}
   rows={[
-    ["Most ancient", "~1–2 Earth masses, barely qualifies",           "Mercury (0.055×)",   "xs"],
-    ["Older",        "~5–8 Earth masses, small gas giant",            "Venus (0.815×)",     "sm"],
-    ["Previous",     "~50–100 Earth masses, moderate",               "Earth (1.0×)",       "md"],
-    ["Most recent",  "~10–15 Earth masses, Neptune-scale",           "Mars (0.107×)",      "xs"],
-    ["Current",      "318 Earth masses - peak material availability", "Future rocky planet","xl"]
+    ["Most ancient", "~1–2 Earth masses, barely qualifies",                 "Mercury (0.055×)",        "xs"],
+    ["Older",        "~5–8 Earth masses, small gas giant",                  "Venus (0.815×)",           "sm"],
+    ["Previous",     "~50–100 Earth masses, moderate",                      "Earth (1.0×)",             "md"],
+    ["Most recent",  "~10–15 Earth masses, Neptune-scale",                  "Mars (0.107×)",            "xs"],
+    ["Current",      "318 Earth masses - peak material availability",       "Future rocky planet",      "xl"]
   ]}
 />
 
@@ -261,9 +252,7 @@ If the planetary lifecycle is real, and if intelligence tends to emerge given su
 
 Each iteration gives the universe slightly more time to produce intelligence that escapes the window entirely. Jupiter's future remnant will be larger than Earth, further from the Sun, with a freshly reheated core and icy moon water delivery. The most habitable platform this solar system will have ever produced - if life is already in the loop.
 
-<Pullquote>
-  The Fermi Paradox's silence may not be the silence of absence. It may be the silence of transit - intelligence that appears on one platform and moves to the next before the signal from the first one has even arrived.
-</Pullquote>
+The Fermi Paradox's silence may not be the silence of absence. It may be the silence of transit - intelligence that appears on one platform and moves to the next before the signal from the first one has even arrived.
 
 ---
 
@@ -276,8 +265,6 @@ If the Solar Lifecycle Theory is wrong in its mechanism but right in its intuiti
 Every civilisation that has ever looked up has assumed, in some form, that it was the first. The intended occupant of a stage built specifically for it. The lifecycle framework says something different: that intelligence is the solar system's way of not losing the thread between iterations. That what we are accumulating - knowledge, biology, the ability to recognise what is happening - is not for us. It is for whoever builds the bridge to the next platform.
 
 Jupiter's future remnant will be a rocky world larger than Earth, sitting in a habitable zone warmed by a sub-giant Sun, with a freshly reheated core and an outer system full of water. If there is no one on it when that window opens, the sequence continues without a witness. If there is, whatever they know will have come, in part, from here.
-
-<SectionBreak />
 
 The theory is unconfirmed. The mechanism is unmodelled. The physical problems listed above are real, and they may be fatal to the framework in its current form. But the question the theory poses survives even if the theory does not: *what are the planets for?* Science has a good answer about how they formed. It does not yet have a satisfying answer about whether their arrangement, their sequence, their timing - means anything at all.
 
@@ -303,6 +290,6 @@ The citations below support recurring mainstream-science inputs used by the arti
 
 ---
 
-<ArticleFooter>
+<Footer>
   This theory was developed in conversation and has not been peer reviewed or formally modelled. The planetary lifecycle framework is original. The confirmed science cited is independently verified. The speculative extensions are clearly labelled as such throughout. The physical mechanism for gas giant transitions remains the primary open problem requiring development.
-</ArticleFooter>
+</Footer>

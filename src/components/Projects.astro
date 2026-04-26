@@ -1,0 +1,161 @@
+---
+import { siteConfig } from '../config';
+---
+
+<section id="projects" class="projects-section">
+  <div class="section-inner">
+    <div class="section-heading">
+      <h2>Projects</h2>
+      <div class="heading-rule"></div>
+    </div>
+
+    <div class="projects-list">
+      {siteConfig.projects.map((project, index) => (
+        <a
+          href={project.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="project-card glass"
+        >
+          <div class="project-header">
+            <span class="project-number">0{index + 1}</span>
+            <h3 class="project-name">{project.name}</h3>
+          </div>
+
+          <p class="project-description">{project.description}</p>
+
+          <ul class="project-bullets">
+            {project.bullets.map((b) => <li>{b}</li>)}
+          </ul>
+
+          <div class="project-tags">
+            {project.tags.map((t) => <span class="tag">{t}</span>)}
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects-section {
+    padding: 6rem clamp(1.5rem, 6vw, 6rem);
+    border-top: 1px solid var(--border);
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-heading {
+    margin-bottom: 3.5rem;
+  }
+
+  .section-heading h2 {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+  }
+
+  .heading-rule {
+    width: 3rem;
+    height: 3px;
+    background: var(--accent);
+    margin-top: 0.75rem;
+    border-radius: 2px;
+  }
+
+  .projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    display: block;
+    padding: 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+
+  .project-card:hover {
+    border-color: var(--accent);
+  }
+
+  .project-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-number {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  .project-name {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .project-description {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .project-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .project-bullets li {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    padding-left: 1rem;
+    position: relative;
+  }
+
+  .project-bullets li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    opacity: 0.6;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tag {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+</style>

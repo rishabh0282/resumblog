@@ -1,0 +1,70 @@
+---
+interface Props {
+  number: string;
+  label: string;
+  title: string;
+}
+const { number, label, title } = Astro.props;
+---
+<div class="mcard">
+  <div class="mcard-header">
+    <span class="mcard-num">{number}</span>
+    <span class="mcard-label">{label}</span>
+  </div>
+  <h3 class="mcard-title">{title}</h3>
+  <div class="mcard-body">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .mcard {
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.02);
+    transition: border-color 0.2s;
+  }
+
+  .mcard:hover {
+    border-color: rgba(0, 245, 255, 0.2);
+  }
+
+  .mcard-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .mcard-num {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    opacity: 0.7;
+  }
+
+  .mcard-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .mcard-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.6rem;
+    line-height: 1.35;
+  }
+
+  .mcard-body {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+  }
+</style>

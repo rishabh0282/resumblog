@@ -1,0 +1,47 @@
+---
+---
+<div class="venus-diagram">
+  <div class="venus-planet-label">
+    <span class="venus-name">Venus</span>
+    <span class="venus-sub">Atmospheric zones</span>
+  </div>
+  <div class="venus-zones">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .venus-diagram {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .venus-planet-label {
+    padding: 1rem 1.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .venus-name {
+    display: block;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e8c97a;
+  }
+
+  .venus-sub {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .venus-zones {
+    display: flex;
+    flex-direction: column;
+  }
+</style>

@@ -1,0 +1,78 @@
+---
+interface Props {
+  sections: string[];
+}
+const { sections } = Astro.props;
+
+function toAnchor(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+---
+<nav class="article-nav" aria-label="Article sections">
+  <span class="article-nav-label">Sections</span>
+  <ol class="article-nav-list">
+    {sections.map((s) => (
+      <li>
+        <a href={`#${toAnchor(s)}`} class="article-nav-link">{s}</a>
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .article-nav {
+    margin: 2rem 0;
+    padding: 1rem 1.5rem;
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
+    border-radius: 0 0 4px 4px;
+    background: rgba(0, 245, 255, 0.02);
+  }
+
+  .article-nav-label {
+    display: block;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .article-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    counter-reset: nav-counter;
+  }
+
+  .article-nav-list li {
+    counter-increment: nav-counter;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .article-nav-list li::before {
+    content: counter(nav-counter, decimal-leading-zero);
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+  }
+
+  .article-nav-link {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .article-nav-link:hover {
+    color: var(--accent);
+  }
+</style>

@@ -1,0 +1,175 @@
+---
+import { siteConfig } from '../config';
+---
+
+<section id="publications" class="publications-section">
+  <div class="section-inner">
+    <div class="section-heading">
+      <h2>Publications</h2>
+      <div class="heading-rule"></div>
+      <div class="pub-profiles">
+        <a href={siteConfig.social.scholar} target="_blank" rel="noopener noreferrer" class="pub-profile-link">
+          Google Scholar ↗
+        </a>
+        <span class="pub-profile-sep">·</span>
+        <a href={siteConfig.social.orcid} target="_blank" rel="noopener noreferrer" class="pub-profile-link">
+          ORCID ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="pub-list">
+      {siteConfig.publications.map((pub, index) => (
+        <a
+          href={pub.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="pub-card glass"
+        >
+          <div class="pub-header">
+            <span class="pub-number">0{index + 1}</span>
+            <h3 class="pub-name">{pub.name}</h3>
+          </div>
+          <p class="pub-description">{pub.description}</p>
+          <p class="pub-publisher">{pub.publisher}</p>
+          <div class="pub-tags">
+            {pub.tags.map((t) => <span class="tag">{t}</span>)}
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .publications-section {
+    padding: 6rem clamp(1.5rem, 6vw, 6rem);
+    border-top: 1px solid var(--border);
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-heading {
+    margin-bottom: 3.5rem;
+  }
+
+  .section-heading h2 {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+  }
+
+  .heading-rule {
+    width: 3rem;
+    height: 3px;
+    background: var(--accent);
+    margin-top: 0.75rem;
+    border-radius: 2px;
+  }
+
+  .pub-profiles {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .pub-profile-link {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .pub-profile-link:hover { opacity: 1; }
+
+  .pub-profile-sep {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    opacity: 0.4;
+  }
+
+  .pub-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .pub-card {
+    display: block;
+    padding: 1.75rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+
+  .pub-card:hover {
+    border-color: var(--accent);
+  }
+
+  .pub-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .pub-number {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  .pub-name {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .pub-description {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 0.4rem;
+  }
+
+  .pub-publisher {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    opacity: 0.7;
+    margin-bottom: 1rem;
+    letter-spacing: 0.04em;
+  }
+
+  .pub-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tag {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+</style>

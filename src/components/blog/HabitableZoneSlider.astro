@@ -1,0 +1,351 @@
+---
+interface Phase {
+  label: string;
+  ageGa: number;
+  hzInner: number;
+  hzOuter: number;
+  desc: string;
+}
+
+interface Props {
+  phases: Phase[];
+  'aria-label'?: string;
+}
+
+const { phases } = Astro.props;
+const phasesJson = JSON.stringify(phases);
+---
+
+<div class="hzs-wrapper">
+  <p class="hzs-mobile-notice">Solar evolution diagram available on desktop</p>
+
+  <div class="hzs-desktop">
+    <p class="hzs-cue">Drag the slider to step through solar evolution phases</p>
+
+    <canvas
+      id="hzs-canvas"
+      width="700"
+      height="300"
+      role="img"
+      aria-label="Diagram showing planetary positions and the habitable zone across solar evolution phases"
+    ></canvas>
+
+    <div class="hzs-controls">
+      <button id="hzs-play" class="hzs-play-btn" aria-label="Play solar evolution animation">▶</button>
+      <div class="hzs-slider-track">
+        <input
+          type="range"
+          id="hzs-slider"
+          min="0"
+          max={phases.length - 1}
+          value="2"
+          step="1"
+          aria-label="Solar evolution phase"
+        />
+        <span class="hzs-readout" id="hzs-readout">{phases[2]?.label ?? ''}</span>
+      </div>
+    </div>
+
+    <div class="hzs-desc-box" id="hzs-desc" aria-live="polite">
+      {phases[2]?.desc ?? ''}
+    </div>
+
+    <div class="hzs-legend">
+      <span class="hzs-legend-item">
+        <span class="hzs-swatch hzs-swatch--hz" aria-hidden="true"></span>
+        Classical habitable zone
+      </span>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ phasesJson }}>
+  const phases = JSON.parse(phasesJson);
+
+  const canvas = document.getElementById('hzs-canvas');
+  const slider = document.getElementById('hzs-slider');
+  const readout = document.getElementById('hzs-readout');
+  const playBtn = document.getElementById('hzs-play');
+  const descBox = document.getElementById('hzs-desc');
+
+  if (!canvas || !slider) { /* mobile - skip */ }
+  else {
+    const ctx = canvas.getContext('2d');
+
+    const planets = [
+      { name: 'Mercury', au: 0.39,  r: 3,  color: '#b5b5b5' },
+      { name: 'Venus',   au: 0.72,  r: 6,  color: '#e8c97a' },
+      { name: 'Earth',   au: 1.0,   r: 6,  color: '#4e9cf0' },
+      { name: 'Mars',    au: 1.52,  r: 4,  color: '#c1440e' },
+      { name: 'Jupiter', au: 5.2,   r: 13, color: '#c88b50' },
+      { name: 'Saturn',  au: 9.58,  r: 11, color: '#d4b06a' },
+      { name: 'Uranus',  au: 19.2,  r: 8,  color: '#7de8e8' },
+      { name: 'Neptune', au: 30.1,  r: 7,  color: '#3f54ba' },
+    ];
+
+    function draw(phaseIdx) {
+      const phase = phases[phaseIdx];
+      const W = canvas.width;
+      const H = canvas.height;
+
+      const maxAU = Math.max(35, phase.hzOuter * 1.4);
+
+      function auToX(au) {
+        return 36 + (au / maxAU) * (W - 52);
+      }
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#0A0A0A';
+      ctx.fillRect(0, 0, W, H);
+
+      // HZ band
+      const hzX1 = auToX(phase.hzInner);
+      const hzX2 = Math.min(auToX(phase.hzOuter), W - 4);
+      ctx.fillStyle = 'rgba(78,184,122,0.18)';
+      ctx.fillRect(hzX1, 20, hzX2 - hzX1, H - 40);
+      ctx.strokeStyle = 'rgba(78,184,122,0.5)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([]);
+      ctx.strokeRect(hzX1, 20, hzX2 - hzX1, H - 40);
+
+      // Sun
+      const sunGrad = ctx.createRadialGradient(18, H / 2, 2, 18, H / 2, 16);
+      sunGrad.addColorStop(0, '#fff9a0');
+      sunGrad.addColorStop(0.5, '#f5a623');
+      sunGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = sunGrad;
+      ctx.beginPath();
+      ctx.arc(18, H / 2, 16, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Planets
+      planets.forEach(({ name, au, r, color }) => {
+        const x = auToX(au);
+        if (x > W - 4) return;
+        const y = H / 2;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(136,136,136,0.75)';
+        ctx.font = '8px Geist Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(name, x, y + r + 11);
+      });
+
+      // Age / label
+      ctx.fillStyle = 'rgba(200,169,110,0.8)';
+      ctx.font = '10px Geist Mono, monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${phase.ageGa} Ga`, W - 8, 15);
+
+      // HZ AU label inside band if wide enough
+      const bandW = hzX2 - hzX1;
+      if (bandW > 40) {
+        ctx.fillStyle = 'rgba(78,184,122,0.9)';
+        ctx.font = '8px Geist Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${phase.hzInner}–${phase.hzOuter} AU`, hzX1 + bandW / 2, H - 24);
+      }
+    }
+
+    function update() {
+      const idx = Number(slider.value);
+      const phase = phases[idx];
+      draw(idx);
+      if (readout) readout.textContent = phase.label;
+      if (descBox) descBox.textContent = phase.desc;
+      slider.setAttribute('aria-valuetext', phase.label);
+    }
+
+    slider.addEventListener('input', update);
+    update();
+
+    // Play / pause
+    let playing = false;
+    let frame = null;
+
+    if (playBtn) {
+      playBtn.addEventListener('click', () => {
+        if (playing) {
+          playing = false;
+          if (frame !== null) cancelAnimationFrame(frame);
+          playBtn.textContent = '▶';
+          playBtn.setAttribute('aria-label', 'Play solar evolution animation');
+        } else {
+          playing = true;
+          playBtn.textContent = '⏸';
+          playBtn.setAttribute('aria-label', 'Pause solar evolution animation');
+
+          let t = 0;
+          const step = () => {
+            if (!playing) return;
+            t += 0.004;
+            const idx = Math.floor(t) % phases.length;
+            slider.value = String(idx);
+            update();
+            frame = requestAnimationFrame(step);
+          };
+          frame = requestAnimationFrame(step);
+        }
+      });
+    }
+
+    // Resize
+    const ro = new ResizeObserver(() => {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.floor(rect.width);
+      canvas.height = Math.min(Math.floor(rect.width * 0.43), 300);
+      update();
+    });
+    ro.observe(canvas);
+  }
+</script>
+
+<style>
+  .hzs-wrapper { margin: 2rem 0; }
+
+  .hzs-mobile-notice {
+    display: none;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 1rem;
+  }
+
+  @media (max-width: 767px) {
+    .hzs-desktop { display: none; }
+    .hzs-mobile-notice { display: block; }
+  }
+
+  .hzs-cue {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+
+  #hzs-canvas {
+    display: block;
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 4px;
+  }
+
+  .hzs-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 700px;
+    margin: 0.75rem auto 0;
+  }
+
+  .hzs-play-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--accent);
+    border-radius: 2px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .hzs-play-btn:hover { border-color: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hzs-play-btn { display: none; }
+  }
+
+  .hzs-slider-track {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  #hzs-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+
+  #hzs-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f3d7a0, #c8a96e);
+    border: 1px solid #f3d7a0;
+    box-shadow: 0 0 0 4px rgba(200, 169, 110, 0.2);
+    cursor: grab;
+  }
+
+  #hzs-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f3d7a0, #c8a96e);
+    border: 1px solid #f3d7a0;
+    cursor: grab;
+  }
+
+  .hzs-readout {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    min-width: 12rem;
+    text-align: right;
+  }
+
+  .hzs-desc-box {
+    max-width: 700px;
+    margin: 0.75rem auto 0;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    min-height: 3.5rem;
+  }
+
+  .hzs-legend {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .hzs-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  .hzs-swatch {
+    display: inline-block;
+    width: 16px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .hzs-swatch--hz { background: rgba(78, 184, 122, 0.5); }
+</style>
