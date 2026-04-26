@@ -606,9 +606,22 @@ const ogImage = `/og/${post.slug}.png`;
     color: var(--text-muted);
     text-decoration: none;
     z-index: 200;
-    transition: color 0.2s;
+    transition: color 0.2s, background 0.2s;
+    background: rgba(10, 10, 10, 0.85);
+    padding: 0.35em 0.7em;
+    border-radius: 3px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
   .back-arrow:hover { color: var(--accent); }
+
+  @media (max-width: 767px) {
+    .back-arrow {
+      bottom: 1rem;
+      left: 1rem;
+      font-size: 0.7rem;
+    }
+  }
 </style>
 
 <script>

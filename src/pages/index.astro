@@ -61,17 +61,18 @@ const roles = [
 <Layout title="Rishabh Tiwari - QA Engineer & SDET">
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-bg" aria-hidden="true">
-      <div class="hero-glow hero-glow-cyan"></div>
-      <div class="hero-glow hero-glow-purple"></div>
-      <div class="hero-dots"></div>
-    </div>
-    <div class="hero-art" aria-hidden="true">
-      <img src="/Gemini_Generated_Image_2f8r9p2f8r9p2f8r.png" alt="" class="hero-art-img" />
-    </div>
+    <!-- Midjourney-style: dense scrolling text rows -->
+    <div class="hero-textwall" aria-hidden="true" id="hero-textwall"></div>
+
+    <!-- Vignette overlays -->
+    <div class="hw-vignette hw-vignette-radial" aria-hidden="true"></div>
+    <div class="hw-vignette hw-vignette-top" aria-hidden="true"></div>
+    <div class="hw-vignette hw-vignette-bottom" aria-hidden="true"></div>
+
     <div class="hero-inner">
-      <h1 class="hero-heading">Quality is a first-class concern.</h1>
-      <p class="hero-sub">QA Engineer → SDET. Automation frameworks, API validation, and published AI research.</p>
+      <p class="hero-eyebrow">QA Engineer · SDET · AI Researcher</p>
+      <h1 class="hero-heading">Quality is a<br/>first-class concern.</h1>
+      <p class="hero-sub">Automation frameworks, API validation, and published AI research.</p>
       <nav class="hero-links">
         <a href="#resume" class="btn-primary">View Resume ↓</a>
         <a href="/blog" class="btn-ghost">Read Writing →</a>
@@ -133,136 +134,154 @@ const roles = [
     min-height: 100svh;
     display: flex;
     align-items: center;
-    padding: 0 clamp(1.5rem, 6vw, 6rem);
+    justify-content: center;
     overflow: hidden;
+    background: #060c18;
   }
 
-  /* Background layer */
-  .hero-bg {
+  /* ── Text wall (Midjourney-style) ───────────────────────────── */
+  .hero-textwall {
     position: absolute;
     inset: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Radial glows */
-  .hero-glow {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.18;
-  }
-
-  .hero-glow-cyan {
-    width: 60vw;
-    height: 60vw;
-    max-width: 700px;
-    max-height: 700px;
-    background: radial-gradient(circle, #00F5FF 0%, transparent 70%);
-    top: -10%;
-    left: -10%;
-  }
-
-  .hero-glow-purple {
-    width: 50vw;
-    height: 50vw;
-    max-width: 600px;
-    max-height: 600px;
-    background: radial-gradient(circle, #7000FF 0%, transparent 70%);
-    bottom: -15%;
-    right: -5%;
-  }
-
-  /* Dot grid */
-  .hero-dots {
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px);
-    background-size: 32px 32px;
-    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
-    -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
-  }
-
-  .hero-art {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 52%;
-    height: 100%;
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
 
-  .hero-art-img {
-    width: 100%;
-    height: 104%;
-    object-fit: cover;
-    object-position: center top;
-    opacity: 0.32;
-    mask-image: linear-gradient(to right, transparent 0%, black 35%, black 88%, transparent 100%),
-                linear-gradient(to bottom, black 0%, black 90%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%, black 88%, transparent 100%),
-                        linear-gradient(to bottom, black 0%, black 90%, transparent 100%);
-    mask-composite: intersect;
-    -webkit-mask-composite: source-in;
+  /* Rows are injected by JS */
+  :global(.hw-row) {
+    display: flex;
+    white-space: nowrap;
+    will-change: transform;
+    line-height: 1.1;
+    height: 14px;
   }
 
-  @media (max-width: 767px) {
-    .hero-art { display: none; }
+  :global(.hw-row span) {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.62rem;
+    color: rgba(60, 130, 210, 0.55);
+    padding: 0 0.18em;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
   }
 
+  :global(.hw-row span.hw-hi) {
+    color: rgba(100, 180, 255, 0.85);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.hw-row) { animation: hw-scroll var(--hw-dur, 40s) linear infinite; }
+    :global(.hw-row.hw-rtl) { animation-direction: reverse; }
+  }
+
+  @keyframes hw-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* Vignettes */
+  .hw-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Subtle center darkening — let text wall show at edges, fade near hero copy */
+  .hw-vignette-radial {
+    background: radial-gradient(
+      ellipse 55% 65% at 50% 50%,
+      rgba(6,12,24,0.82) 0%,
+      rgba(6,12,24,0.40) 55%,
+      transparent 100%
+    );
+  }
+
+  .hw-vignette-top {
+    background: linear-gradient(to bottom, #060c18 0%, transparent 20%);
+  }
+
+  .hw-vignette-bottom {
+    background: linear-gradient(to top, #060c18 0%, transparent 20%);
+  }
+
+  /* ── Hero inner ─────────────────────────────────────────────── */
   .hero-inner {
     position: relative;
-    z-index: 1;
-    max-width: 900px;
+    z-index: 2;
+    text-align: center;
+    max-width: 800px;
+    padding: 0 clamp(1.5rem, 6vw, 4rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.9;
+    margin-bottom: 1.25rem;
   }
 
   .hero-heading {
     font-family: 'Inter Tight', sans-serif;
     font-weight: 700;
-    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-size: clamp(2.75rem, 8vw, 5.5rem);
     letter-spacing: -0.05em;
-    color: var(--text-primary);
-    line-height: 1.05;
-    margin-bottom: 1rem;
+    color: #ffffff;
+    line-height: 1.04;
+    margin-bottom: 1.25rem;
+    text-shadow: 0 2px 40px rgba(0,0,0,0.5);
   }
 
   .hero-sub {
     font-family: 'Inter', sans-serif;
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
-    color: var(--text-muted);
+    font-size: clamp(0.95rem, 2vw, 1.15rem);
+    color: rgba(255,255,255,0.5);
     margin-bottom: 2.5rem;
+    max-width: 480px;
+    line-height: 1.6;
   }
 
   .hero-links {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    justify-content: center;
   }
 
   .btn-primary {
     font-family: 'Geist Mono', monospace;
     font-size: 0.875rem;
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1.75rem;
     background: var(--accent);
     color: var(--bg);
     text-decoration: none;
-    border-radius: 2px;
+    border-radius: 3px;
     font-weight: 500;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 20px rgba(0,245,255,0.2);
   }
-  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary:hover { opacity: 0.88; box-shadow: 0 0 32px rgba(0,245,255,0.4); }
 
   .btn-ghost {
     font-family: 'Geist Mono', monospace;
     font-size: 0.875rem;
-    padding: 0.75rem 1.5rem;
-    border: 1px solid var(--border);
-    color: var(--text-primary);
+    padding: 0.75rem 1.75rem;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.7);
     text-decoration: none;
-    border-radius: 2px;
+    border-radius: 3px;
     transition: border-color 0.2s, color 0.2s;
+    backdrop-filter: blur(4px);
   }
   .btn-ghost:hover {
     border-color: var(--accent);
@@ -444,6 +463,52 @@ const roles = [
 </style>
 
 <script>
+  // ── Hero text wall (Midjourney-style) ─────────────────────────
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const wall = document.getElementById('hero-textwall');
+    if (!wall) return;
+
+    // Dense character pool — mix of latin, digits, symbols for Midjourney matrix look
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789.,;:!?/-+=<>[]{}|~@#$%^&*()_'
+      .split('');
+
+    // Row height matches CSS (14px)
+    const ROW_H = 14;
+    const viewH = window.innerHeight;
+    const numRows = Math.ceil(viewH / ROW_H) + 2;
+
+    // How many chars fill the viewport width × 2 for seamless loop
+    // Each char is ~9px wide at 0.62rem with 0.06em spacing
+    const charsPerHalf = Math.ceil((window.innerWidth * 2.2) / 9);
+
+    for (let r = 0; r < numRows; r++) {
+      const row = document.createElement('div');
+      row.className = 'hw-row' + (r % 3 === 1 ? ' hw-rtl' : '');
+
+      const dur = 30 + (r % 7) * 6;
+      row.style.setProperty('--hw-dur', `${dur}s`);
+      row.style.animationDelay = `-${(r * 3.3) % dur}s`;
+
+      // Build one half, then duplicate for seamless loop
+      const half = [];
+      for (let c = 0; c < charsPerHalf; c++) {
+        half.push(chars[Math.floor(Math.random() * chars.length)]);
+      }
+      const full = [...half, ...half];
+
+      full.forEach((ch, i) => {
+        const s = document.createElement('span');
+        s.textContent = ch;
+        if ((i + r * 7) % 15 === 0) s.classList.add('hw-hi');
+        row.appendChild(s);
+      });
+
+      wall.appendChild(row);
+    }
+  })();
+
   // ── GSAP Horizontal Scroll Resume (desktop only) ──────────────
   import gsap from 'gsap';
   import ScrollTrigger from 'gsap/ScrollTrigger';
