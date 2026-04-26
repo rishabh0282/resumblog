@@ -1,7 +1,24 @@
-import type { APIRoute } from 'astro';
+import type { APIRoute, CollectionEntry } from 'astro';
 import { getCollection } from 'astro:content';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
+
+const FONT_URL =
+  'https://cdn.jsdelivr.net/npm/@fontsource/inter/files/inter-latin-700-normal.woff';
+
+async function loadFontData(): Promise<ArrayBuffer | null> {
+  try {
+    const fontRes = await fetch(FONT_URL);
+    if (!fontRes.ok) {
+      console.warn(`OG font request failed (${fontRes.status}). Falling back to system sans-serif.`);
+      return null;
+    }
+    return await fontRes.arrayBuffer();
+  } catch (error) {
+    console.warn('OG font request failed. Falling back to system sans-serif.', error);
+    return null;
+  }
+}
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -12,18 +29,14 @@ export async function getStaticPaths() {
 }
 
 export const GET: APIRoute = async ({ props }) => {
-  const { post } = props as { post: any };
+  const { post } = props as { post: CollectionEntry<'blog'> | null };
 
-  const title = post ? post.data.title : '[Your Name]';
-  const tag = post ? post.data.tags[0] : 'QA & Automation Engineer';
+  const title = post ? post.data.title : 'Rishabh Tiwari';
+  const tag = post?.data.tags[0] ?? 'QA & Automation Engineer';
   const series = post?.data.series;
   const seriesOrder = post?.data.seriesOrder;
-
-  // Fetch Inter font for Satori (TTF format — woff2 is not supported by satori)
-  const fontRes = await fetch(
-    'https://cdn.jsdelivr.net/npm/@fontsource/inter/files/inter-latin-700-normal.woff'
-  );
-  const fontData = await fontRes.arrayBuffer();
+  const fontData = await loadFontData();
+  const fontFamily = fontData ? 'Inter Tight' : 'sans-serif';
 
   const svg = await satori(
     {
@@ -37,7 +50,7 @@ export const GET: APIRoute = async ({ props }) => {
           flexDirection: 'column',
           justifyContent: 'flex-end',
           padding: '60px',
-          fontFamily: 'Inter Tight',
+          fontFamily,
           border: '1px solid rgba(255,255,255,0.08)',
           position: 'relative',
         },
@@ -50,7 +63,7 @@ export const GET: APIRoute = async ({ props }) => {
                 position: 'absolute',
                 top: '48px',
                 left: '60px',
-                fontFamily: 'Inter Tight',
+                fontFamily,
                 fontWeight: 700,
                 fontSize: '18px',
                 color: '#888888',
@@ -78,7 +91,7 @@ export const GET: APIRoute = async ({ props }) => {
             type: 'span',
             props: {
               style: {
-                fontFamily: 'Inter Tight',
+                fontFamily,
                 fontSize: '14px',
                 color: '#888888',
                 textTransform: 'uppercase',
@@ -94,7 +107,7 @@ export const GET: APIRoute = async ({ props }) => {
             type: 'span',
             props: {
               style: {
-                fontFamily: 'Inter Tight',
+                fontFamily,
                 fontSize: '13px',
                 color: '#888888',
                 marginBottom: '12px',
@@ -108,7 +121,7 @@ export const GET: APIRoute = async ({ props }) => {
             type: 'h1',
             props: {
               style: {
-                fontFamily: 'Inter Tight',
+                fontFamily,
                 fontWeight: 700,
                 fontSize: title.length > 40 ? '52px' : '64px',
                 color: '#F5F5F5',
@@ -125,14 +138,16 @@ export const GET: APIRoute = async ({ props }) => {
     {
       width: 1200,
       height: 630,
-      fonts: [
-        {
-          name: 'Inter Tight',
-          data: fontData,
-          weight: 700,
-          style: 'normal' as const,
-        },
-      ],
+      fonts: fontData
+        ? [
+            {
+              name: 'Inter Tight',
+              data: fontData,
+              weight: 700,
+              style: 'normal' as const,
+            },
+          ]
+        : [],
     }
   );
 

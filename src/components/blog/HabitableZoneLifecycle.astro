@@ -1,0 +1,762 @@
+---
+// Habitable zone lifecycle viewer - canvas-2D overhead orbital view.
+// Planets at fixed visual radii; HZ ring maps AU→screen using the same scale.
+---
+
+<div class="hzl-wrapper">
+  <p class="hzl-mobile-notice">Solar evolution diagram available on desktop</p>
+
+  <div class="hzl-desktop" data-hz-lifecycle>
+    <p class="hzl-cue">Press ▶ or drag the slider to travel through 15 billion years of solar history</p>
+
+    <canvas
+      class="hzl-canvas"
+      data-hz-canvas
+      role="img"
+      aria-label="Overhead orbital diagram showing planetary positions and the habitable zone across solar evolution phases"
+    ></canvas>
+
+    <div class="hzl-controls">
+      <button
+        type="button"
+        class="hzl-play-btn"
+        aria-label="Auto-advance through solar history"
+        aria-pressed="false"
+        data-hz-play
+      >&#9654;</button>
+
+      <div class="hzl-slider-track">
+        <label for="hzl-slider" class="sr-only">Solar age</label>
+        <input
+          type="range"
+          id="hzl-slider"
+          min="0"
+          max="100"
+          value="31"
+          step="0.1"
+          aria-label="Solar age"
+          data-hz-slider
+        />
+        <span class="hzl-readout" data-hz-readout></span>
+      </div>
+    </div>
+
+    <div class="hzl-age" aria-hidden="true" data-hz-age></div>
+    <div class="hzl-desc" aria-live="polite" data-hz-desc></div>
+    <p class="hzl-model-note" data-hz-model-note aria-live="polite"></p>
+
+    <div class="hzl-legend">
+      <span class="hzl-legend-item">
+        <span class="hzl-swatch" style="background:rgba(78,184,122,0.45)"></span>
+        Classical habitable zone
+      </span>
+      <span class="hzl-legend-item">
+        <span class="hzl-swatch" style="background:#4eb87a"></span>
+        Inside HZ
+      </span>
+      <span class="hzl-legend-item">
+        <span class="hzl-swatch" style="background:#7ad0d6"></span>
+        Model temperate case
+      </span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hzl-wrapper { margin: 2rem 0; }
+
+  .hzl-mobile-notice {
+    display: none;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 1rem;
+  }
+
+  @media (max-width: 767px) {
+    .hzl-desktop { display: none; }
+    .hzl-mobile-notice { display: block; }
+  }
+
+  .hzl-cue {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .hzl-canvas {
+    display: block;
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 4px;
+  }
+
+  .hzl-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 700px;
+    margin: 0.75rem auto 0;
+  }
+
+  .hzl-play-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--accent);
+    border-radius: 2px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .hzl-play-btn:hover { border-color: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hzl-play-btn { display: none; }
+  }
+
+  .hzl-slider-track {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  #hzl-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+
+  #hzl-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f3d7a0, #c8a96e);
+    border: 1px solid #f3d7a0;
+    box-shadow: 0 0 0 4px rgba(200,169,110,0.2);
+    cursor: grab;
+  }
+
+  #hzl-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f3d7a0, #c8a96e);
+    border: 1px solid #f3d7a0;
+    cursor: grab;
+  }
+
+  .hzl-readout {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    min-width: 14rem;
+    text-align: right;
+  }
+
+  .hzl-age {
+    max-width: 700px;
+    margin: 0.5rem auto 0;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.72rem;
+    color: rgba(200,169,110,0.75);
+    text-align: right;
+  }
+
+  .hzl-desc {
+    max-width: 700px;
+    margin: 0.5rem auto 0;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    min-height: 3rem;
+  }
+
+  .hzl-model-note {
+    max-width: 700px;
+    margin: 0.35rem auto 0;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+    line-height: 1.5;
+  }
+
+  .hzl-legend {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: center;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .hzl-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .hzl-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 9px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  // ── Phase data ──────────────────────────────────────────────────────────────
+  const PHASES = [
+    { id: 'form',           label: 'Very early solar system',    ageGa: 0.006, sliderRange: [0,   8],  hzI: 0.80, hzO: 1.40,  sunR: 0.70, sunColor: '#f5a820', desc: 'Classical HZ near 0.80–1.40 AU in the faint-Sun era. The system is still gas-rich and unsettled.' },
+    { id: 'early',          label: 'Early main sequence',        ageGa: 3.0,   sliderRange: [8,   24], hzI: 0.88, hzO: 1.54,  sunR: 0.78, sunColor: '#f5a820', desc: 'Earth lies inside the habitable band. Venus may still be temperate under special climate assumptions.' },
+    { id: 'present',        label: 'Present-day main sequence',  ageGa: 4.6,   sliderRange: [24,  40], hzI: 0.95, hzO: 1.67,  sunR: 0.84, sunColor: '#f5a820', desc: 'Earth remains inside. Venus is clearly interior and dry. Mars lies beyond the central temperate band.' },
+    { id: 'future',         label: 'Brightening main sequence',  ageGa: 7.0,   sliderRange: [40,  58], hzI: 1.15, hzO: 2.00,  sunR: 0.94, sunColor: '#f5b030', desc: 'The Sun brightens ~10% per billion years. Earth nears the inner edge; the wave drifts toward Mars.' },
+    { id: 'subgiant',       label: 'Subgiant phase',             ageGa: 10.0,  sliderRange: [58,  72], hzI: 3.50, hzO: 6.20,  sunR: 1.08, sunColor: '#f57030', desc: 'Luminosity rises rapidly. The HZ ring sweeps outward across the giant-planet region.' },
+    { id: 'redgiant',       label: 'Red giant peak',             ageGa: 11.5,  sliderRange: [72,  84], hzI: 49.0, hzO: 71.0,  sunR: 1.50, sunColor: '#ff5020', desc: 'The habitable zone explodes to 49–71 AU. The widest warm window the system will ever produce.' },
+    { id: 'wdwarf_hot',     label: 'White dwarf, hot',           ageGa: 13.0,  sliderRange: [84,  90], hzI: 8.00, hzO: 14.0,  sunR: 0.52, sunColor: '#c0d8ff', desc: 'A second habitable window appears near 8–14 AU while only outer survivors remain.' },
+    { id: 'wdwarf_cooling', label: 'White dwarf cooling',        ageGa: 13.5,  sliderRange: [90,  94], hzI: 4.00, hzO: 7.00,  sunR: 0.44, sunColor: '#f2d9aa', desc: 'The second window contracts inward to ~4–7 AU - the same star, one last contracting chance.' },
+    { id: 'wdwarf_dimming', label: 'White dwarf, dimming',       ageGa: 14.0,  sliderRange: [94,  98], hzI: 1.00, hzO: 3.00,  sunR: 0.36, sunColor: '#e3b474', desc: 'The band collapses toward 1–3 AU. No known surviving rocky planets remain that close.' },
+    { id: 'ember',          label: 'Final ember',                ageGa: 15.0,  sliderRange: [98, 100], hzI: 0.12, hzO: 0.45,  sunR: 0.28, sunColor: '#b76438', desc: 'The white dwarf cools toward black over trillions of years. The HZ has effectively vanished.' },
+  ];
+
+  // Orbital radii during white dwarf phases.
+  // Mass loss (~1 M☉ → ~0.54 M☉) expands all surviving orbits by ×1/0.54 ≈ ×1.85.
+  // Inner planets (Mercury–Mars) are engulfed during the red giant phase.
+  // Jupiter may survive but is dynamically perturbed; best estimates place it ~9–10 AU post-AGB.
+  // Outer planets expand smoothly outward; Pluto-class objects reach very wide or unbound orbits.
+  // Values settle quickly — white dwarf phases are billions of years of stability.
+  // null = destroyed / engulfed during red giant phase
+  const LATE_ORBITS = {
+    Mercury: { wdwarf_hot: null, wdwarf_cooling: null, wdwarf_dimming: null, ember: null },
+    Venus:   { wdwarf_hot: null, wdwarf_cooling: null, wdwarf_dimming: null, ember: null },
+    Earth:   { wdwarf_hot: null, wdwarf_cooling: null, wdwarf_dimming: null, ember: null },
+    Mars:    { wdwarf_hot: null, wdwarf_cooling: null, wdwarf_dimming: null, ember: null },
+    // Jupiter: 5.20 AU × 1.85 ≈ 9.6 AU; slight further scatter to ~10 AU over time
+    Jupiter: { wdwarf_hot: 9.2,  wdwarf_cooling: 9.6,  wdwarf_dimming: 9.8,  ember: 10.0 },
+    // Saturn: 9.58 AU × 1.85 ≈ 17.7 AU
+    Saturn:  { wdwarf_hot: 16.5, wdwarf_cooling: 17.2, wdwarf_dimming: 17.6, ember: 17.7 },
+    // Uranus: 19.2 AU × 1.85 ≈ 35.5 AU
+    Uranus:  { wdwarf_hot: 33.0, wdwarf_cooling: 34.5, wdwarf_dimming: 35.2, ember: 35.5 },
+    // Neptune: 30.0 AU × 1.85 ≈ 55.5 AU
+    Neptune: { wdwarf_hot: 52.0, wdwarf_cooling: 54.0, wdwarf_dimming: 55.0, ember: 55.5 },
+    // Pluto: 39.5 AU × 1.85 ≈ 73 AU; likely further scattered to >80 AU or ejected
+    Pluto:   { wdwarf_hot: 68.0, wdwarf_cooling: 72.0, wdwarf_dimming: 76.0, ember: 80.0 },
+  };
+
+  // Default AU positions (standard solar system)
+  const PLANETS = [
+    { name: 'Mercury', au: 0.39,  r: 3,  color: '#b5b5b5', modelCase: false },
+    { name: 'Venus',   au: 0.72,  r: 5,  color: '#d4a84b', modelCase: true  },
+    { name: 'Earth',   au: 1.00,  r: 6,  color: '#4e90d4', modelCase: false },
+    { name: 'Mars',    au: 1.52,  r: 4,  color: '#c0522a', modelCase: false },
+    { name: 'Jupiter', au: 5.20,  r: 8,  color: '#c8a060', modelCase: false },
+    { name: 'Saturn',  au: 9.58,  r: 7,  color: '#c8b060', modelCase: false },
+    { name: 'Uranus',  au: 19.2,  r: 6,  color: '#7de8e8', modelCase: true  },
+    { name: 'Neptune', au: 30.0,  r: 6,  color: '#4060cc', modelCase: true  },
+    { name: 'Pluto',   au: 39.5,  r: 3,  color: '#8a7a7a', modelCase: false },
+  ];
+
+  const LATE_PHASE_IDS = new Set(['wdwarf_hot', 'wdwarf_cooling', 'wdwarf_dimming', 'ember']);
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+  const lerp  = (a, b, t) => a + (b - a) * t;
+  const smooth = (t) => t * t * (3 - 2 * t);
+
+  function getPhase(val) {
+    for (let i = 0; i < PHASES.length; i++) {
+      const [lo, hi] = PHASES[i].sliderRange;
+      if (val >= lo && (val < hi || i === PHASES.length - 1)) {
+        const t = hi > lo ? (val - lo) / (hi - lo) : 1;
+        return { cur: PHASES[i], next: PHASES[i + 1] ?? PHASES[i], t };
+      }
+    }
+    const last = PHASES[PHASES.length - 1];
+    return { cur: last, next: last, t: 1 };
+  }
+
+  function getPlanetAuForPhase(planet, phaseId) {
+    if (!LATE_PHASE_IDS.has(phaseId)) return planet.au;
+    const late = LATE_ORBITS[planet.name];
+    if (!late) return planet.au;
+    const v = late[phaseId];
+    return v === undefined ? planet.au : v; // null means destroyed
+  }
+
+  function resolvePlanetAu(planet, cur, next, st) {
+    const auCur  = getPlanetAuForPhase(planet, cur.id);
+    const auNext = getPlanetAuForPhase(planet, next.id);
+    // If either endpoint is null (destroyed), treat as null
+    if (auCur === null || auNext === null) return null;
+    return lerp(auCur, auNext, st);
+  }
+
+  function formatAgeGa(g) {
+    return g < 0.1 ? g.toFixed(3) + ' Ga' : g < 1 ? g.toFixed(2) + ' Ga' : g.toFixed(1) + ' Ga';
+  }
+
+  // ── Per-planet animation state ───────────────────────────────────────────────
+  // Each planet gets an independent orbital angle that advances over time
+  const angles = PLANETS.map(() => Math.random() * Math.PI * 2);
+
+  // ── Canvas drawing ───────────────────────────────────────────────────────────
+  let prevFrameTime = 0;
+  function draw(canvas, sliderVal, frameTime) {
+    const dt = prevFrameTime ? Math.min((frameTime - prevFrameTime) / 1000, 0.05) : 1 / 60;
+    prevFrameTime = frameTime;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+    const cx = W / 2;
+    const cy = H / 2;
+
+    const { cur, next, t } = getPhase(sliderVal);
+    const st = smooth(t);
+
+    const hzI   = lerp(cur.hzI, next.hzI, st);
+    const hzO   = lerp(cur.hzO, next.hzO, st);
+    const ageGa = lerp(cur.ageGa, next.ageGa, st);
+    const sunRf = lerp(cur.sunR, next.sunR, st);
+
+    // Interpolate sun color
+    const sc1 = hexToRgb(cur.sunColor);
+    const sc2 = hexToRgb(next.sunColor);
+    const sunRgb = {
+      r: Math.round(lerp(sc1.r, sc2.r, st)),
+      g: Math.round(lerp(sc1.g, sc2.g, st)),
+      b: Math.round(lerp(sc1.b, sc2.b, st)),
+    };
+    const sunColorStr = `rgb(${sunRgb.r},${sunRgb.g},${sunRgb.b})`;
+
+    // ── Determine which planets are visible and their resolved AU ──────────────
+    const visible = PLANETS.map((p) => {
+      const au = resolvePlanetAu(p, cur, next, st);
+      return { planet: p, au };
+    });
+
+    // The AU range we need to fit on screen = all visible AUs + HZ outer
+    const allAus = visible.filter(v => v.au !== null).map(v => v.au);
+    allAus.push(hzO);
+    const maxAU = Math.max(...allAus) * 1.15; // 15% margin
+
+    // Map AU → pixel radius (linear within each phase's range)
+    const MAX_ORBIT_PX = Math.min(cx, cy) - 28; // leave margin for labels
+    function auToPx(au) {
+      // Use sqrt scale so inner planets aren't invisible
+      return (Math.sqrt(au / maxAU)) * MAX_ORBIT_PX;
+    }
+
+    // ── Clear ─────────────────────────────────────────────────────────────────
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#020712';
+    ctx.fillRect(0, 0, W, H);
+
+    // ── Stars ─────────────────────────────────────────────────────────────────
+    // Use seeded positions stored on canvas to avoid re-randomising
+    if (!canvas._stars) {
+      canvas._stars = Array.from({ length: 180 }, () => ({
+        x: Math.random(), y: Math.random(),
+        s: Math.random() * 1.2 + 0.3,
+        a: Math.random() * 0.5 + 0.2,
+      }));
+    }
+    canvas._stars.forEach(({ x, y, s, a }) => {
+      ctx.beginPath();
+      ctx.arc(x * W, y * H, s, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,220,255,${a})`;
+      ctx.fill();
+    });
+
+    // ── Sun ──────────────────────────────────────────────────────────────────
+    const sunPx = Math.max(8, sunRf * 36 * (W / 700));
+    const phaseId = cur.id;
+
+    if (phaseId === 'redgiant' || (phaseId === 'subgiant' && t > 0.5)) {
+      const rgBlend = phaseId === 'redgiant' ? 1 : (t - 0.5) * 2;
+      const rgR = Math.min(sunPx * lerp(1.6, 2.4, smooth(rgBlend)), MAX_ORBIT_PX * 0.12);
+
+      const envGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, rgR * 1.8);
+      envGrad.addColorStop(0,   `rgba(255,120,30,${lerp(0, 0.22, smooth(rgBlend))})`);
+      envGrad.addColorStop(0.5, `rgba(200,60,10,${lerp(0, 0.10, smooth(rgBlend))})`);
+      envGrad.addColorStop(1,   'transparent');
+      ctx.beginPath();
+      ctx.arc(cx, cy, rgR * 1.8, 0, Math.PI * 2);
+      ctx.fillStyle = envGrad;
+      ctx.fill();
+
+      const wispAlpha = lerp(0, 0.18, smooth(rgBlend));
+      const wispLen   = rgR * 0.55;
+      ctx.save();
+      ctx.translate(cx, cy);
+      for (let s = 0; s < 6; s++) {
+        const angle = (s / 6) * Math.PI * 2 + frameTime * 0.00006;
+        const x1 = Math.cos(angle) * rgR * 0.9;
+        const y1 = Math.sin(angle) * rgR * 0.9;
+        const x2 = Math.cos(angle) * (rgR * 0.9 + wispLen);
+        const y2 = Math.sin(angle) * (rgR * 0.9 + wispLen);
+        const wg = ctx.createLinearGradient(x1, y1, x2, y2);
+        wg.addColorStop(0, `rgba(255,120,40,${wispAlpha})`);
+        wg.addColorStop(1, 'transparent');
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = wg;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      const rgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, rgR);
+      rgGrad.addColorStop(0,    '#ffe0c0');
+      rgGrad.addColorStop(0.3,  sunColorStr);
+      rgGrad.addColorStop(0.75, `rgba(${sunRgb.r},${sunRgb.g},${sunRgb.b},0.73)`);
+      rgGrad.addColorStop(1,    'transparent');
+      ctx.beginPath();
+      ctx.arc(cx, cy, rgR, 0, Math.PI * 2);
+      ctx.fillStyle = rgGrad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, rgR * 0.72, 0, Math.PI * 2);
+      ctx.fillStyle = sunColorStr;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, Math.max(3, rgR * 0.22), 0, Math.PI * 2);
+      ctx.fillStyle = '#fff0d0';
+      ctx.fill();
+
+    } else if (phaseId === 'wdwarf_hot' || phaseId === 'wdwarf_cooling' || phaseId === 'wdwarf_dimming' || phaseId === 'ember') {
+      const wdBlend = phaseId === 'wdwarf_hot' ? smooth(t) : 1;
+      const wdR = Math.max(3, sunPx * 0.55);
+
+      const wdTints = { wdwarf_hot: [200,220,255], wdwarf_cooling: [240,230,210], wdwarf_dimming: [220,190,150], ember: [160,110,70] };
+      const [wr, wg, wb] = wdTints[phaseId] ?? [200,220,255];
+
+      const haloGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, wdR * 5.5);
+      haloGrad.addColorStop(0,    `rgba(${wr},${wg},${wb},0.22)`);
+      haloGrad.addColorStop(0.35, `rgba(${wr},${wg},${wb},0.08)`);
+      haloGrad.addColorStop(1,    'transparent');
+      ctx.beginPath();
+      ctx.arc(cx, cy, wdR * 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = haloGrad;
+      ctx.fill();
+
+      ctx.save();
+      ctx.globalAlpha = lerp(0, 0.55, wdBlend);
+      const spokeLen = wdR * 7;
+      const spokeW   = wdR * 0.35;
+      [[1,0],[0,1],[-1,0],[0,-1]].forEach(([dx, dy]) => {
+        const spokeGrad = ctx.createLinearGradient(cx, cy, cx + dx * spokeLen, cy + dy * spokeLen);
+        spokeGrad.addColorStop(0, `rgba(${wr},${wg},${wb},0.7)`);
+        spokeGrad.addColorStop(1, 'transparent');
+        ctx.beginPath();
+        ctx.moveTo(cx - dy * spokeW, cy - dx * spokeW);
+        ctx.lineTo(cx + dx * spokeLen, cy + dy * spokeLen);
+        ctx.lineTo(cx + dy * spokeW,  cy + dx * spokeW);
+        ctx.closePath();
+        ctx.fillStyle = spokeGrad;
+        ctx.fill();
+      });
+      ctx.restore();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, wdR * 1.8, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${wr},${wg},${wb},0.18)`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, wdR);
+      coreGrad.addColorStop(0,   `rgb(${wr},${wg},${wb})`);
+      coreGrad.addColorStop(0.5, `rgba(${wr},${wg},${wb},0.9)`);
+      coreGrad.addColorStop(1,   'transparent');
+      ctx.beginPath();
+      ctx.arc(cx, cy, wdR, 0, Math.PI * 2);
+      ctx.fillStyle = coreGrad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, Math.max(1.5, wdR * 0.4), 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+
+    } else {
+      // Main sequence: corona glow + solid disc + bright core
+      const msCoronaGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, sunPx * 2.2);
+      msCoronaGrad.addColorStop(0,    `rgba(${sunRgb.r},${sunRgb.g},${sunRgb.b},0.80)`);
+      msCoronaGrad.addColorStop(0.45, `rgba(${sunRgb.r},${sunRgb.g},${sunRgb.b},0.33)`);
+      msCoronaGrad.addColorStop(1,    'transparent');
+      ctx.beginPath();
+      ctx.arc(cx, cy, sunPx * 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = msCoronaGrad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, sunPx, 0, Math.PI * 2);
+      ctx.fillStyle = sunColorStr;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, sunPx * 0.45, 0, Math.PI * 2);
+      ctx.fillStyle = '#fffde0';
+      ctx.fill();
+    }
+
+    // ── HZ band ──────────────────────────────────────────────────────────────
+    const hzRin = auToPx(hzI);
+    const hzRout = auToPx(hzO);
+
+    // Filled annulus
+    ctx.beginPath();
+    ctx.arc(cx, cy, hzRout, 0, Math.PI * 2, false);
+    ctx.arc(cx, cy, hzRin,  0, Math.PI * 2, true);
+    ctx.fillStyle = 'rgba(78,184,122,0.13)';
+    ctx.fill();
+
+    // Inner/outer borders
+    ctx.beginPath(); ctx.arc(cx, cy, hzRin,  0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(78,184,122,0.45)'; ctx.lineWidth = 1; ctx.setLineDash([4,4]); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, hzRout, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(78,184,122,0.45)'; ctx.lineWidth = 1; ctx.setLineDash([4,4]); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // HZ AU label
+    ctx.fillStyle = 'rgba(78,184,122,0.7)';
+    ctx.font = `${Math.max(8, W * 0.011)}px Geist Mono, monospace`;
+    ctx.textAlign = 'left';
+    ctx.fillText(`HZ ${hzI.toFixed(1)}–${hzO.toFixed(1)} AU`, cx + hzRin + 4, cy - 4);
+
+    // ── Orbit rings ───────────────────────────────────────────────────────────
+    visible.forEach(({ planet, au }) => {
+      if (au === null) return;
+      const orbitR = auToPx(au);
+      ctx.beginPath();
+      ctx.arc(cx, cy, orbitR, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(80,70,60,0.35)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    });
+
+    // ── Planets ───────────────────────────────────────────────────────────────
+    const ORBITAL_SPEED_BASE = 0.22; // radians/sec for 1 AU
+
+    visible.forEach(({ planet, au }, i) => {
+      if (au === null) return;
+
+      // Advance angle
+      const speed = ORBITAL_SPEED_BASE / Math.sqrt(Math.max(au, 0.01));
+      angles[i] = (angles[i] + speed * dt) % (Math.PI * 2);
+
+      const orbitR = auToPx(au);
+      const px = cx + Math.cos(angles[i]) * orbitR;
+      const py = cy + Math.sin(angles[i]) * orbitR;
+
+      const inHz = au >= hzI && au <= hzO;
+      const isMC = !inHz && planet.modelCase;
+
+      // Planet dot
+      const dotR = Math.max(2, planet.r * (W / 700));
+      let dotColor = planet.color;
+      if (inHz)      dotColor = '#4eb87a';
+      else if (isMC) dotColor = '#7ad0d6';
+
+      // Glow for HZ planets
+      if (inHz || isMC) {
+        const glow = ctx.createRadialGradient(px, py, 0, px, py, dotR * 3.5);
+        glow.addColorStop(0, dotColor + 'aa');
+        glow.addColorStop(1, 'transparent');
+        ctx.beginPath(); ctx.arc(px, py, dotR * 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = glow; ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.arc(px, py, dotR, 0, Math.PI * 2);
+      ctx.fillStyle = dotColor;
+      ctx.fill();
+
+      // Name label
+      const labelColor = inHz ? 'rgba(111,220,162,0.9)' : isMC ? 'rgba(122,208,214,0.85)' : 'rgba(160,150,140,0.7)';
+      const fontSize = Math.max(7, W * 0.0115);
+      ctx.font = `${fontSize}px Geist Mono, monospace`;
+      ctx.fillStyle = labelColor;
+      ctx.textAlign = 'center';
+      // Place label above the dot, nudged so it doesn't overlap center
+      const labelY = py - dotR - 4;
+      ctx.fillText(planet.name, px, labelY);
+    });
+
+    // ── Age overlay ───────────────────────────────────────────────────────────
+    ctx.fillStyle = 'rgba(200,169,110,0.75)';
+    ctx.font = `${Math.max(8, W * 0.013)}px Geist Mono, monospace`;
+    ctx.textAlign = 'right';
+    ctx.fillText(`${formatAgeGa(ageGa)}`, W - 10, 16);
+  }
+
+  // ── Hex to RGB ────────────────────────────────────────────────────────────
+  function hexToRgb(hex) {
+    const h = hex.replace('#', '');
+    const n = parseInt(h.length === 3 ? h.split('').map(c => c+c).join('') : h, 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+  }
+
+  // ── Mount each instance ──────────────────────────────────────────────────
+  document.querySelectorAll('[data-hz-lifecycle]').forEach((root) => {
+    if (!(root instanceof HTMLElement) || root.dataset.hzMounted === 'true') return;
+    root.dataset.hzMounted = 'true';
+
+    const canvas   = root.querySelector('[data-hz-canvas]');
+    const slider   = root.querySelector('[data-hz-slider]');
+    const readout  = root.querySelector('[data-hz-readout]');
+    const descEl   = root.querySelector('[data-hz-desc]');
+    const ageEl    = root.querySelector('[data-hz-age]');
+    const playBtn  = root.querySelector('[data-hz-play]');
+    const noteEl   = root.querySelector('[data-hz-model-note]');
+
+    if (!(canvas instanceof HTMLCanvasElement) || !(slider instanceof HTMLInputElement)) return;
+
+    // Set canvas resolution
+    function setSize() {
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.floor(rect.width || 700);
+      const h = Math.floor(Math.min(w * 0.72, 500));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width  = w;
+        canvas.height = h;
+      }
+    }
+    setSize();
+
+    // Update text readouts
+    function updateText(sliderVal) {
+      const { cur, next, t } = getPhase(sliderVal);
+      const st = smooth(t);
+      const ageGa = lerp(cur.ageGa, next.ageGa, st);
+      const hzI   = lerp(cur.hzI, next.hzI, st);
+      const hzO   = lerp(cur.hzO, next.hzO, st);
+
+      if (readout) readout.textContent = cur.label;
+      if (ageEl)   ageEl.textContent   = `Solar age ~${formatAgeGa(ageGa)}  ·  HZ ${hzI.toFixed(2)}–${hzO.toFixed(2)} AU`;
+      if (descEl)  descEl.textContent  = cur.desc;
+      slider.setAttribute('aria-valuetext', `${cur.label}, ${formatAgeGa(ageGa)}`);
+
+      const inZone = [], modelCase = [];
+      PLANETS.forEach((p) => {
+        const au = resolvePlanetAu(p, cur, next, st);
+        if (au === null) return;
+        if (au >= hzI && au <= hzO) inZone.push(p.name);
+        else if (p.modelCase) modelCase.push(p.name);
+      });
+      let note = inZone.length
+        ? `Inside classical HZ: ${inZone.join(', ')}.`
+        : 'No major body inside classical HZ in this phase.';
+      if (modelCase.length) note += ` Model-supported temperate cases: ${modelCase.join(', ')}.`;
+      if (noteEl) noteEl.textContent = note;
+    }
+
+    // RAF loop
+    let rafId = null;
+    let running = false;
+    let playing = false;
+    let playPrev = 0;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function tick(now) {
+      if (!running) return;
+      setSize();
+      draw(canvas, Number(slider.value), now);
+      if (playing && !reduced) {
+        const dt = playPrev ? (now - playPrev) / 1000 : 0;
+        playPrev = now;
+        let val = Number(slider.value) + dt * 8;
+        if (val >= 100) val = 0;
+        slider.value = String(val);
+        updateText(val);
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function startLoop() { if (!running) { running = true; rafId = requestAnimationFrame(tick); } }
+    function stopLoop()  { running = false; if (rafId) { cancelAnimationFrame(rafId); rafId = null; } }
+
+    // IntersectionObserver to pause when off-screen
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries[0].isIntersecting ? startLoop() : stopLoop();
+      }, { rootMargin: '120px 0px' });
+      io.observe(canvas);
+    } else {
+      startLoop();
+    }
+
+    // Slider input - always redraw immediately so HZ ring moves in sync
+    slider.addEventListener('input', () => {
+      const val = Number(slider.value);
+      updateText(val);
+      setSize();
+      draw(canvas, val, performance.now());
+    });
+
+    // Play/pause
+    if (reduced && playBtn instanceof HTMLButtonElement) {
+      playBtn.style.display = 'none';
+    } else if (playBtn instanceof HTMLButtonElement) {
+      playBtn.addEventListener('click', () => {
+        playing = !playing;
+        if (playing) {
+          playPrev = 0;
+          playBtn.innerHTML = '&#10074;&#10074;';
+          playBtn.setAttribute('aria-pressed', 'true');
+          playBtn.setAttribute('aria-label', 'Pause auto-advance');
+        } else {
+          playBtn.innerHTML = '&#9654;';
+          playBtn.setAttribute('aria-pressed', 'false');
+          playBtn.setAttribute('aria-label', 'Auto-advance through solar history');
+        }
+      });
+      slider.addEventListener('pointerdown', () => {
+        playing = false;
+        playBtn.innerHTML = '&#9654;';
+        playBtn.setAttribute('aria-pressed', 'false');
+      });
+    }
+
+    // Resize
+    const ro = new ResizeObserver(() => { setSize(); });
+    ro.observe(canvas);
+
+    // Initial render
+    updateText(Number(slider.value));
+    setSize();
+    draw(canvas, Number(slider.value), 0);
+  });
+</script>

@@ -40,9 +40,14 @@ const totalCount = allPosts.length;
 const useBento = totalCount >= 3;
 ---
 
-<Layout title="Writing — QA & Automation Engineer">
+<Layout title="Writing - QA & Automation Engineer">
   <main class="blog-index">
     <header class="blog-header">
+      <div class="blog-header-bg" aria-hidden="true">
+        <div class="blog-glow blog-glow-purple"></div>
+        <div class="blog-glow blog-glow-cyan"></div>
+        <div class="blog-dots"></div>
+      </div>
       <a href="/" class="back-home">← Home</a>
       <h1 class="page-title">Writing</h1>
     </header>
@@ -61,6 +66,9 @@ const useBento = totalCount >= 3;
               <h2 class="card-title">{post.data.title}</h2>
               <p class="card-tag">{post.data.tags[0]}</p>
               <p class="card-excerpt">{post.data.excerpt}</p>
+              <time class="card-date" datetime={post.data.date.toISOString()}>
+                {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+              </time>
             </div>
           </a>
         ))}
@@ -71,17 +79,20 @@ const useBento = totalCount >= 3;
         {seriesGroups.map((group) => (
           <div class="series-group">
             <p class="series-label">
-              {group.name} — {group.posts.length} {group.posts.length === 1 ? 'part' : 'parts'}
+              {group.name} - {group.posts.length} {group.posts.length === 1 ? 'part' : 'parts'}
             </p>
             <div class={`panes panes-${group.posts.length}`}>
               {group.posts.map((post, i) => (
                 <a
                   href={`/blog/${post.slug}`}
                   class={`pane pane-${i}`}
-                  style={i === 0
-                    ? 'background: rgba(0,245,255,0.06)'
-                    : 'background: rgba(112,0,255,0.06)'}
                 >
+                  {post.data.cardImage && (
+                    <div class="pane-card-bg" aria-hidden="true">
+                      <img src={post.data.cardImage} alt="" class="pane-card-img" />
+                      <div class="pane-card-overlay"></div>
+                    </div>
+                  )}
                   <div class="pane-inner">
                     <p class="pane-series-indicator">
                       Part {post.data.seriesOrder} of {group.posts.length}
@@ -89,6 +100,9 @@ const useBento = totalCount >= 3;
                     <h2 class="pane-title">{post.data.title}</h2>
                     <p class="pane-tag">{post.data.tags[0]}</p>
                     <p class="pane-excerpt">{post.data.excerpt}</p>
+                    <time class="card-date" datetime={post.data.date.toISOString()}>
+                      {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </time>
                   </div>
                   <div class="pane-glow" aria-hidden="true"></div>
                 </a>
@@ -126,11 +140,58 @@ const useBento = totalCount >= 3;
   }
 
   .blog-header {
-    padding: 2rem clamp(1.5rem, 5vw, 4rem);
+    position: relative;
+    padding: 3.5rem clamp(1.5rem, 5vw, 4rem);
     display: flex;
     align-items: center;
     gap: 2rem;
     border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .blog-header-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .blog-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.2;
+  }
+
+  .blog-glow-purple {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #7000FF 0%, transparent 70%);
+    top: -120%;
+    right: 10%;
+  }
+
+  .blog-glow-cyan {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, #00F5FF 0%, transparent 70%);
+    top: -100%;
+    left: 20%;
+  }
+
+  .blog-dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  }
+
+  .blog-header .back-home,
+  .blog-header .page-title {
+    position: relative;
+    z-index: 1;
   }
 
   .back-home {
@@ -205,7 +266,7 @@ const useBento = totalCount >= 3;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 2.5rem clamp(1.5rem, 5vw, 4rem);
+    padding: 4rem clamp(1.5rem, 5vw, 4rem) 2.5rem;
     text-decoration: none;
     border-right: 1px solid var(--border);
     overflow: hidden;
@@ -214,10 +275,11 @@ const useBento = totalCount >= 3;
 
   .pane:last-child { border-right: none; }
 
-  .panes:has(.pane-0:hover) .pane-0 { flex: 0 0 70%; }
-  .panes:has(.pane-0:hover) .pane-1 { flex: 0 0 30%; }
-  .panes:has(.pane-1:hover) .pane-1 { flex: 0 0 70%; }
-  .panes:has(.pane-1:hover) .pane-0 { flex: 0 0 30%; }
+  /* JS-driven expand - avoids CSS :hover thrash when layout shifts mid-hover */
+  .panes.expand-0 .pane-0 { flex: 0 0 70%; }
+  .panes.expand-0 .pane-1 { flex: 0 0 30%; }
+  .panes.expand-1 .pane-1 { flex: 0 0 70%; }
+  .panes.expand-1 .pane-0 { flex: 0 0 30%; }
 
   .pane-standalone { border: none; }
 
@@ -268,6 +330,46 @@ const useBento = totalCount >= 3;
     overflow: hidden;
   }
 
+  .card-date {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+    letter-spacing: 0.04em;
+    margin-top: 0.25rem;
+  }
+
+  /* ── Card background image ─────────────────────────────────── */
+  .pane-card-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .pane-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    opacity: 0.35;
+    transition: opacity 0.4s;
+  }
+
+  .pane:hover .pane-card-img { opacity: 0.5; }
+
+  .pane-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 10, 10, 0.3) 0%,
+      rgba(10, 10, 10, 0.65) 60%,
+      rgba(10, 10, 10, 0.92) 100%
+    );
+  }
+
   .pane-glow {
     position: absolute;
     inset: 0;
@@ -291,12 +393,27 @@ const useBento = totalCount >= 3;
       min-height: 50svh;
     }
     .pane:last-child { border-bottom: none; }
-    /* Disable pane expand on mobile */
-    .panes:has(.pane-0:hover) .pane-0,
-    .panes:has(.pane-0:hover) .pane-1,
-    .panes:has(.pane-1:hover) .pane-1,
-    .panes:has(.pane-1:hover) .pane-0 {
-      flex: 1;
-    }
   }
 </style>
+
+<script>
+  // Drive pane expand via mouseenter/mouseleave so layout shifts don't re-trigger hover
+  document.querySelectorAll<HTMLElement>('.panes').forEach((panesEl) => {
+    const panes = panesEl.querySelectorAll<HTMLElement>('.pane-0, .pane-1');
+    panes.forEach((pane) => {
+      const index = pane.classList.contains('pane-0') ? 0 : 1;
+      pane.addEventListener('mouseenter', () => {
+        if (window.innerWidth < 768) return;
+        panesEl.classList.remove('expand-0', 'expand-1');
+        panesEl.classList.add(`expand-${index}`);
+      });
+      pane.addEventListener('mouseleave', (e) => {
+        // Only remove if leaving the panes container entirely
+        const related = e.relatedTarget as Element | null;
+        if (!related || !panesEl.contains(related)) {
+          panesEl.classList.remove('expand-0', 'expand-1');
+        }
+      });
+    });
+  });
+</script>

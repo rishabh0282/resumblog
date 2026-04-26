@@ -12,6 +12,8 @@ const blog = defineCollection({
     seriesOrder: z.number().optional(),
     colorScheme: z.enum(['dark', 'light']).default('dark'),
     hasInteractiveComponents: z.boolean().default(false),
+    poster: z.string().optional(),
+    cardImage: z.string().optional(),
   }),
 });
 

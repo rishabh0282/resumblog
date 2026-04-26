@@ -7,8 +7,14 @@ interface Props {
   ogImage?: string;
 }
 
-const { title, description = 'QA & Automation Engineer — portfolio and writing.', ogImage } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const { title, description = 'QA & Automation Engineer - portfolio and writing.', ogImage } = Astro.props;
+const siteOrigin = Astro.site ?? null;
+const canonicalURL = siteOrigin ? new URL(Astro.url.pathname, siteOrigin).toString() : null;
+const resolvedOgImage = ogImage
+  ? siteOrigin
+    ? new URL(ogImage, siteOrigin).toString()
+    : ogImage
+  : undefined;
 ---
 
 <!doctype html>
@@ -16,7 +22,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="canonical" href={canonicalURL} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="author" content="Rishabh Tiwari" />
+    {canonicalURL && <link rel="canonical" href={canonicalURL} />}
 
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -24,11 +32,12 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <!-- OG -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    {ogImage && <meta property="og:image" content={ogImage} />}
+    {canonicalURL && <meta property="og:url" content={canonicalURL} />}
+    {resolvedOgImage && <meta property="og:image" content={resolvedOgImage} />}
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- Fonts: loaded here ONLY — never in MDX or child components -->
+    <!-- Fonts: loaded here ONLY - never in MDX or child components -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -62,42 +71,171 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <!-- Custom cursor -->
     <div id="cursor" aria-hidden="true"></div>
 
+    <!-- Site nav -->
+    <nav class="site-nav" id="site-nav">
+      <a class="nav-home" href="/">Rishabh Tiwari</a>
+      <div class="nav-links">
+        <a href="/#resume"         class="nav-link nav-section" data-nav-match="/" data-section="resume">Resume</a>
+        <a href="/#about"          class="nav-link nav-section" data-nav-match="/" data-section="about">About</a>
+        <a href="/#projects"       class="nav-link nav-section" data-nav-match="/" data-section="projects">Projects</a>
+        <a href="/#publications"   class="nav-link nav-section" data-nav-match="/" data-section="publications">Publications</a>
+        <a href="/#certifications" class="nav-link nav-section" data-nav-match="/" data-section="certifications">Certifications</a>
+        <span class="nav-divider" aria-hidden="true"></span>
+        <a href="/blog" class="nav-link" data-nav-match="/blog">Blog</a>
+      </div>
+    </nav>
+
     <slot />
 
-    <script>
-      // ── Custom cursor with rAF lag ──────────────────────────
-      const cursor = document.getElementById('cursor');
-      if (cursor) {
-        let mouseX = 0, mouseY = 0;
-        let curX = 0, curY = 0;
+    <style>
+      .site-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 9998;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.5rem;
+        background: rgba(10, 10, 10, 0.82);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
 
-        document.addEventListener('mousemove', (e) => {
-          mouseX = e.clientX;
-          mouseY = e.clientY;
-        });
+      .nav-home {
+        font-family: 'Geist Mono', monospace;
+        font-size: 0.75rem;
+        color: var(--text-primary);
+        text-decoration: none;
+        letter-spacing: 0.03em;
+        opacity: 0.85;
+        transition: opacity 0.15s;
+      }
+      .nav-home:hover { opacity: 1; }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .nav-link {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        transition: color 0.15s;
+        position: relative;
+        white-space: nowrap;
+      }
+      .nav-link:hover { color: var(--text-primary); }
+      .nav-link.active { color: var(--accent); }
+      .nav-link.active::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -3px;
+        height: 1px;
+        background: var(--accent);
+        opacity: 0.6;
+      }
+
+      .nav-divider {
+        width: 1px;
+        height: 14px;
+        background: rgba(255, 255, 255, 0.12);
+        flex-shrink: 0;
+      }
+
+      /* Hide portfolio section anchors on mobile — they only exist on / */
+      @media (max-width: 860px) {
+        .nav-section { display: none; }
+        .nav-divider  { display: none; }
+      }
+    </style>
+
+    <script>
+      // ── Active nav link + scroll-spy ─────────────────────────
+      (function () {
+        const path = window.location.pathname;
+        const isHome = path === '/' || path === '';
+
+        // Blog page: highlight Blog link only
+        if (!isHome) {
+          document.querySelectorAll('.nav-link').forEach((el) => {
+            const match = el.getAttribute('data-nav-match') ?? '';
+            if (match === '/blog' && path.startsWith('/blog')) el.classList.add('active');
+          });
+          return;
+        }
+
+        // Home: scroll-spy via IntersectionObserver
+        const sectionLinks = Array.from(document.querySelectorAll('.nav-link[data-section]'));
+        const sectionIds = sectionLinks.map((el) => el.getAttribute('data-section'));
+
+        function setActive(id) {
+          sectionLinks.forEach((el) => {
+            const matches = el.getAttribute('data-section') === id;
+            el.classList.toggle('active', matches);
+          });
+        }
+
+        // Start with Resume highlighted
+        setActive('resume');
+
+        if ('IntersectionObserver' in window) {
+          // Track which sections are currently visible
+          const visible = new Set();
+
+          const io = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) visible.add(entry.target.id);
+              else visible.delete(entry.target.id);
+            });
+            // Highlight the first visible section in page order
+            const active = sectionIds.find((id) => visible.has(id));
+            if (active) setActive(active);
+          }, { rootMargin: '-44px 0px -55% 0px', threshold: 0 });
+
+          sectionIds.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) io.observe(el);
+          });
+        }
+      })();
+
+      // ── Custom cursor (immediate follow, no lag) ──────────────
+      const root = document.documentElement;
+      const cursor = document.getElementById('cursor');
+      const canUseCustomCursor =
+        window.matchMedia('(pointer: fine)').matches &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (cursor && canUseCustomCursor) {
+        root.classList.add('js-cursor-enabled');
 
         const interactiveSelector = 'a, button, [role="button"], input, textarea, select, label';
 
-        document.addEventListener('mouseover', (e) => {
-          if ((e.target as Element).closest(interactiveSelector)) {
+        document.addEventListener('mousemove', (e) => {
+          cursor.style.left = `${e.clientX}px`;
+          cursor.style.top = `${e.clientY}px`;
+          const target = e.target instanceof Element ? e.target : null;
+          if (target && target !== cursor && target.closest(interactiveSelector)) {
             cursor.classList.add('hovering');
-          }
-        });
-
-        document.addEventListener('mouseout', (e) => {
-          if ((e.target as Element).closest(interactiveSelector)) {
+          } else {
             cursor.classList.remove('hovering');
           }
-        });
-
-        function animateCursor() {
-          curX += (mouseX - curX) * 0.12;
-          curY += (mouseY - curY) * 0.12;
-          cursor.style.left = `${curX}px`;
-          cursor.style.top = `${curY}px`;
-          requestAnimationFrame(animateCursor);
+        }, { passive: true });
+      } else {
+        root.classList.remove('js-cursor-enabled');
+        if (cursor) {
+          cursor.style.display = 'none';
         }
-        animateCursor();
       }
     </script>
   </body>

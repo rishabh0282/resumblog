@@ -11,9 +11,9 @@ export const siteConfig = {
     orcid: 'https://orcid.org/0000-0003-2000-4167',
   },
   aboutMe:
-    'I am an ISTQB-certified QA engineer with 3+ years of experience building Selenium/Java automation frameworks — at IBM, across freelance SaaS, fintech, and e-commerce projects, and now with Appium mobile testing at Factech. My work sits at the intersection of engineering quality and AI systems.\n\n' +
+    'I am an ISTQB-certified QA engineer with 3+ years of experience building Selenium/Java automation frameworks - at IBM, across freelance SaaS, fintech, and e-commerce projects, and now with Appium mobile testing at Factech. My work sits at the intersection of engineering quality and AI systems.\n\n' +
     'At Factech (Jan 2026 – Present), I designed a mobile test automation framework using Appium (Python) and Page Object Model for an Android Visitor Management System, conducted API testing with Postman across multiple modules, and executed 50+ test cases covering functional, security, and integration scenarios.\n\n' +
-    'As a Freelance QA Automation Engineer (Aug 2023 – Dec 2025), I delivered Selenium WebDriver frameworks for 5+ clients across e-commerce, fintech, and SaaS — automating 200+ test cases and reducing manual testing effort by 60%.\n\n' +
+    'As a Freelance QA Automation Engineer (Aug 2023 – Dec 2025), I delivered Selenium WebDriver frameworks for 5+ clients across e-commerce, fintech, and SaaS - automating 200+ test cases and reducing manual testing effort by 60%.\n\n' +
     'At IBM India (Jun 2022 – Jul 2023), I developed automation frameworks, designed 180+ test scripts, reduced regression time by 50%, and integrated suites into Jenkins CI/CD pipelines.\n\n' +
     'Earlier at Collaborative Intelligence (Jun 2021 – May 2022), I engineered computer vision pipelines using YOLO architectures, improved detection accuracy by 15%+, and co-authored 5 peer-reviewed papers across IEEE, Springer, and Wiley. I hold ISTQB Foundation Level and Microsoft Azure Fundamentals (AZ-900) certifications, and a B.Tech in Electronics and Communications Engineering from Amity University.',
   skillGroups: [

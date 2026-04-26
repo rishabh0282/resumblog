@@ -7,6 +7,15 @@ import { siteConfig } from '../config';
     <div class="section-heading">
       <h2>Publications</h2>
       <div class="heading-rule"></div>
+      <div class="pub-profiles">
+        <a href={siteConfig.social.scholar} target="_blank" rel="noopener noreferrer" class="pub-profile-link">
+          Google Scholar ↗
+        </a>
+        <span class="pub-profile-sep">·</span>
+        <a href={siteConfig.social.orcid} target="_blank" rel="noopener noreferrer" class="pub-profile-link">
+          ORCID ↗
+        </a>
+      </div>
     </div>
 
     <div class="pub-list">
@@ -61,6 +70,32 @@ import { siteConfig } from '../config';
     background: var(--accent);
     margin-top: 0.75rem;
     border-radius: 2px;
+  }
+
+  .pub-profiles {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .pub-profile-link {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .pub-profile-link:hover { opacity: 1; }
+
+  .pub-profile-sep {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    opacity: 0.4;
   }
 
   .pub-list {
