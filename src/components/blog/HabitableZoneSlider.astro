@@ -17,45 +17,42 @@ const phasesJson = JSON.stringify(phases);
 ---
 
 <div class="hzs-wrapper">
-  <p class="hzs-mobile-notice">Solar evolution diagram available on desktop</p>
+  <p class="hzs-cue">Drag the slider to step through solar evolution phases</p>
 
-  <div class="hzs-desktop">
-    <p class="hzs-cue">Drag the slider to step through solar evolution phases</p>
+  <canvas
+    id="hzs-canvas"
+    class="hzs-canvas"
+    width="700"
+    height="300"
+    role="img"
+    aria-label="Diagram showing planetary positions and the habitable zone across solar evolution phases"
+  ></canvas>
 
-    <canvas
-      id="hzs-canvas"
-      width="700"
-      height="300"
-      role="img"
-      aria-label="Diagram showing planetary positions and the habitable zone across solar evolution phases"
-    ></canvas>
-
-    <div class="hzs-controls">
-      <button id="hzs-play" class="hzs-play-btn" aria-label="Play solar evolution animation">▶</button>
-      <div class="hzs-slider-track">
-        <input
-          type="range"
-          id="hzs-slider"
-          min="0"
-          max={phases.length - 1}
-          value="2"
-          step="1"
-          aria-label="Solar evolution phase"
-        />
-        <span class="hzs-readout" id="hzs-readout">{phases[2]?.label ?? ''}</span>
-      </div>
+  <div class="hzs-controls">
+    <button id="hzs-play" class="hzs-play-btn" aria-label="Play solar evolution animation">▶</button>
+    <div class="hzs-slider-track">
+      <input
+        type="range"
+        id="hzs-slider"
+        min="0"
+        max={phases.length - 1}
+        value="2"
+        step="1"
+        aria-label="Solar evolution phase"
+      />
+      <span class="hzs-readout" id="hzs-readout">{phases[2]?.label ?? ''}</span>
     </div>
+  </div>
 
-    <div class="hzs-desc-box" id="hzs-desc" aria-live="polite">
-      {phases[2]?.desc ?? ''}
-    </div>
+  <div class="hzs-desc-box" id="hzs-desc" aria-live="polite">
+    {phases[2]?.desc ?? ''}
+  </div>
 
-    <div class="hzs-legend">
-      <span class="hzs-legend-item">
-        <span class="hzs-swatch hzs-swatch--hz" aria-hidden="true"></span>
-        Classical habitable zone
-      </span>
-    </div>
+  <div class="hzs-legend">
+    <span class="hzs-legend-item">
+      <span class="hzs-swatch hzs-swatch--hz" aria-hidden="true"></span>
+      Classical habitable zone
+    </span>
   </div>
 </div>
 
@@ -68,8 +65,7 @@ const phasesJson = JSON.stringify(phases);
   const playBtn = document.getElementById('hzs-play');
   const descBox = document.getElementById('hzs-desc');
 
-  if (!canvas || !slider) { /* mobile - skip */ }
-  else {
+  if (canvas && slider) {
     const ctx = canvas.getContext('2d');
 
     const planets = [
@@ -206,20 +202,6 @@ const phasesJson = JSON.stringify(phases);
 <style>
   .hzs-wrapper { margin: 2rem 0; }
 
-  .hzs-mobile-notice {
-    display: none;
-    font-family: 'Geist Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    text-align: center;
-    padding: 1rem;
-  }
-
-  @media (max-width: 767px) {
-    .hzs-desktop { display: none; }
-    .hzs-mobile-notice { display: block; }
-  }
-
   .hzs-cue {
     font-family: 'Geist Mono', monospace;
     font-size: 0.75rem;
@@ -229,13 +211,17 @@ const phasesJson = JSON.stringify(phases);
     margin-bottom: 0.75rem;
   }
 
-  #hzs-canvas {
+  .hzs-canvas {
     display: block;
     width: 100%;
     max-width: 700px;
     height: auto;
     margin: 0 auto;
     border-radius: 4px;
+  }
+
+  @media (max-width: 767px) {
+    .hzs-canvas { display: none; }
   }
 
   .hzs-controls {

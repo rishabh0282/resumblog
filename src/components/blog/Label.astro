@@ -1,0 +1,39 @@
+---
+interface Props {
+  type?: 'observed' | 'speculative' | 'meta';
+}
+const { type = 'observed' } = Astro.props;
+
+const colorMap: Record<string, string> = {
+  observed: 'rgba(78,184,122,0.15)',
+  speculative: 'rgba(112,0,255,0.12)',
+  meta: 'rgba(200,169,110,0.12)',
+};
+const borderMap: Record<string, string> = {
+  observed: '#4eb87a',
+  speculative: '#7000FF',
+  meta: '#c8a96e',
+};
+const bg = colorMap[type] ?? colorMap.observed;
+const border = borderMap[type] ?? borderMap.observed;
+---
+
+<p class="label-badge" style={`--lbg: ${bg}; --lborder: ${border};`}>
+  <slot />
+</p>
+
+<style>
+  .label-badge {
+    display: inline-block;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--lborder);
+    background: var(--lbg);
+    border: 1px solid color-mix(in srgb, var(--lborder) 50%, transparent);
+    padding: 0.2em 0.75em;
+    border-radius: 2px;
+    margin: 1.5rem 0 0.5rem;
+  }
+</style>
